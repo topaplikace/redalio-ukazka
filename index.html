@@ -3,540 +3,267 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Redalio ukázka</title>
-<link rel="icon" href="data:,">
+<meta name="robots" content="noindex, nofollow">
+<title>Redalio — vibecoding pro začátečníky</title>
+<meta name="description" content="Napište česky, jaký web chcete. AI ho postaví i s podstránkami a dál ho upravujete jen chatem.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235b3df5'/%3E%3Cpath d='M10 23V9h7a4.5 4.5 0 0 1 1 8.9L22 23h-3.6l-3.5-5H13.2v5z' fill='%23fff'/%3E%3C/svg%3E">
 <style>
 :root{
-  --bg:#f6f5fb; --panel:#ffffff; --ink:#17142b; --muted:#6b6880; --line:#e5e2f0;
-  --brand:#5b3df5; --brand2:#ff5c8a; --brand-soft:#ece8ff; --ok:#14a06b; --ok-soft:#e3f6ee;
-  --warn:#c77700; --warn-soft:#fff3dc; --info:#2563eb; --info-soft:#e4edff;
-  --shadow:0 10px 30px rgba(35,20,90,.08);
+  --bg:#f7f6fc; --panel:#ffffff; --ink:#17142b; --muted:#5f5c75; --line:#e4e1f0;
+  --brand:#5b3df5; --brand-ink:#ffffff; --brand2:#ff5c8a; --soft:#eeeaff; --ok:#11895c;
+  --shadow:0 12px 34px rgba(35,20,90,.09); --radius:18px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#100e1c; --panel:#1b1830; --ink:#f1effa; --muted:#a29fb8; --line:#2e2a47;
-    --brand:#8b74ff; --brand2:#ff7aa0; --brand-soft:#2a2350; --ok:#38c98f; --ok-soft:#173528;
-    --warn:#f0a53a; --warn-soft:#3a2c12; --info:#6f9bff; --info-soft:#1a2648;
-    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --bg:#0f0d1b; --panel:#1a172e; --ink:#f1effa; --muted:#aeaac6; --line:#2d2946;
+    --brand:#8f79ff; --brand-ink:#120d2e; --brand2:#ff7aa0; --soft:#262049; --ok:#3ccf94;
+    --shadow:0 12px 34px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
-  --bg:#100e1c; --panel:#1b1830; --ink:#f1effa; --muted:#a29fb8; --line:#2e2a47;
-  --brand:#8b74ff; --brand2:#ff7aa0; --brand-soft:#2a2350; --ok:#38c98f; --ok-soft:#173528;
-  --warn:#f0a53a; --warn-soft:#3a2c12; --info:#6f9bff; --info-soft:#1a2648;
-  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --bg:#0f0d1b; --panel:#1a172e; --ink:#f1effa; --muted:#aeaac6; --line:#2d2946;
+  --brand:#8f79ff; --brand-ink:#120d2e; --brand2:#ff7aa0; --soft:#262049; --ok:#3ccf94;
+  --shadow:0 12px 34px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:84px;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
 a{color:var(--brand)}
-button,input,textarea,select{font:inherit;color:inherit}
-.wrap{max-width:880px;margin:0 auto;padding:0 16px}
-.top{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
-.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em;cursor:pointer}
-.logo i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
-.ghost{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--muted);font-size:14px}
-.screen{display:none;animation:fade .35s ease}
-.screen.on{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-h1{font-size:clamp(28px,6vw,44px);line-height:1.1;letter-spacing:-.03em;margin:18px 0 12px}
-h1 em{font-style:normal;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
-h2{font-size:24px;letter-spacing:-.02em;margin:8px 0 8px}
-h3{margin:0 0 6px;font-size:17px}
-.lead{color:var(--muted);font-size:18px;max-width:620px;margin:0 0 24px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
-label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
-input[type=text],input[type=email],textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;outline:none}
-input:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
-textarea{min-height:120px;resize:vertical}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
-.chip:hover{border-color:var(--brand);color:var(--brand)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:13px 20px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;text-decoration:none}
-.btn.full{width:100%;margin-top:18px}
-.btn.sec{background:var(--brand-soft);color:var(--brand)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.err{color:var(--brand2);font-size:14px;margin-top:8px;min-height:1em}
-.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
-.steps3 .card{padding:16px}
-.steps3 b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--brand-soft);color:var(--brand);margin-bottom:6px;font-size:14px}
-.steps3 p{margin:0;color:var(--muted);font-size:14px}
-.prog{list-style:none;padding:0;margin:18px 0 0}
-.prog li{display:flex;gap:12px;align-items:center;padding:10px 0;color:var(--muted);border-bottom:1px dashed var(--line)}
-.prog li:last-child{border-bottom:0}
-.dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:12px}
-.prog li.run{color:var(--ink)} .prog li.run .dot{border-color:var(--brand);border-top-color:transparent;animation:spin .8s linear infinite}
-.prog li.done{color:var(--ink)} .prog li.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
-@keyframes spin{to{transform:rotate(360deg)}}
-.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:16px}
-.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .5s}
-.mail{max-width:620px;margin:0 auto}
-.mailhead{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px;font-size:14px;color:var(--muted)}
-.mailhead div{display:flex;gap:8px;flex-wrap:wrap} .mailhead b{color:var(--ink)}
-.linkbox{display:block;background:var(--brand-soft);border-radius:12px;padding:14px;font-weight:700;word-break:break-all;text-decoration:none;margin:14px 0}
-.note{font-size:13px;color:var(--muted)}
-/* demo app */
-.demo-bar{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;border-radius:14px;margin-bottom:14px;flex-wrap:wrap}
-.demo-bar small{opacity:.9}
-.demo-bar .btn{background:#fff;color:var(--brand);padding:9px 14px}
-.browser{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow)}
-.browser .url{display:flex;gap:6px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
-.browser .url i{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block}
-.browser .url span{background:var(--bg);border-radius:8px;padding:4px 10px;margin-left:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.app{padding:20px}
-.apphero{border-radius:14px;padding:22px;color:#fff;background:linear-gradient(135deg,#1f7a6b,#2fb39a);margin-bottom:16px}
-.apphero.gen{background:linear-gradient(135deg,#3b4fd8,#7b5cf0)}
-.apphero h2{color:#fff;margin:0 0 4px}
-.apphero p{margin:0;opacity:.9}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.opt{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel);text-align:left}
-.opt.sel{border-color:var(--ok);background:var(--ok-soft)}
-.opt b{display:block} .opt small{color:var(--muted)}
-.times{display:flex;flex-wrap:wrap;gap:8px}
-.times button{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--panel);cursor:pointer}
-.times button.sel{background:var(--ok);border-color:var(--ok);color:#fff}
-.times button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
-.sect{margin:18px 0 8px;font-weight:700}
-.okbox{background:var(--ok-soft);border-radius:12px;padding:14px;margin-top:14px;display:none}
-.okbox.on{display:block}
-.tasks{list-style:none;margin:0;padding:0}
-.tasks li{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
-.tasks input{width:18px;height:18px}
-.tasks li.dn span{text-decoration:line-through;color:var(--muted)}
-.row{display:flex;gap:8px} .row input{flex:1;min-width:0}
-/* done */
-.big-ok{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:32px;margin:0 auto 10px}
-.center{text-align:center}
-.dns{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:13px;overflow-x:auto;white-space:nowrap}
-ol.guide{padding-left:20px;margin:8px 0} ol.guide li{margin:6px 0}
-/* owner */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
-.stat b{font-size:24px;display:block} .stat small{color:var(--muted);font-size:12px}
-.orders{display:flex;flex-direction:column;gap:10px}
-.order{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
-.order .meta{font-size:13px;color:var(--muted);word-break:break-all}
-.order .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.pill{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap}
-.p-wait{background:var(--warn-soft);color:var(--warn)} .p-ready{background:var(--info-soft);color:var(--info)}
-.p-pass{background:var(--brand-soft);color:var(--brand)} .p-live{background:var(--ok-soft);color:var(--ok)}
-.code{font-family:ui-monospace,Consolas,monospace;background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:5px 10px;font-weight:700}
-.small-btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 12px;cursor:pointer;font-size:14px;font-weight:600}
-.small-btn.pri{background:var(--brand);border-color:var(--brand);color:#fff}
-/* guide switcher */
-.guide-nav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:20;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:16px;padding:6px 8px;display:flex;align-items:center;gap:4px;max-width:calc(100vw - 24px)}
-.guide-nav .lbl{font-size:12px;color:var(--muted);padding:0 6px;white-space:nowrap}
-.guide-nav button{border:0;background:none;width:38px;height:38px;border-radius:10px;cursor:pointer;font-weight:700;color:var(--muted);flex:none}
-.guide-nav button.on{background:var(--brand);color:#fff}
-.guide-nav button:hover:not(.on){background:var(--brand-soft);color:var(--brand)}
-@media (max-width:600px){
-  .steps3{grid-template-columns:1fr}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .guide-nav .lbl{display:none}
-  .lead{font-size:16px}
-  .card{padding:16px}
-  .app{padding:14px}
-}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,5.4vw,3.4rem)}
+h2{font-size:clamp(1.55rem,3.4vw,2.2rem)}
+h3{font-size:1.15rem}
+p{margin:0 0 1em}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:48px;padding:0 22px;border-radius:999px;font-weight:650;text-decoration:none;border:2px solid transparent;transition:transform .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn-main{background:var(--brand);color:var(--brand-ink)}
+.btn-ghost{border-color:var(--line);color:var(--ink);background:var(--panel)}
+:focus-visible{outline:3px solid var(--brand2);outline-offset:3px}
+
+/* hlavička */
+header.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;color:var(--ink);text-decoration:none}
+.logo i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:inline-block}
+nav.menu{display:flex;gap:20px;align-items:center}
+nav.menu a{color:var(--muted);text-decoration:none;font-size:.95rem}
+nav.menu a:hover{color:var(--ink)}
+nav.menu .btn{min-height:40px;padding:0 16px;color:var(--brand-ink)}
+@media (max-width:760px){nav.menu a:not(.btn){display:none}}
+
+/* úvod */
+.hero{padding:56px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
+.stitek{display:inline-block;background:var(--soft);color:var(--brand);font-weight:700;font-size:.85rem;padding:6px 12px;border-radius:999px;margin-bottom:16px}
+.hero p.lead{font-size:1.15rem;color:var(--muted);max-width:34em}
+.akce{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.okno{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.okno .lista{display:flex;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.okno .lista b{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.chat{padding:16px;display:grid;gap:10px}
+.bub{max-width:88%;padding:10px 14px;border-radius:14px;font-size:.95rem;line-height:1.45}
+.bub.ja{justify-self:end;background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:4px}
+.bub.ai{background:var(--soft);border-bottom-left-radius:4px}
+.nahled{margin:0 16px 16px;border-radius:12px;overflow:hidden;position:relative;aspect-ratio:16/9;background:var(--soft)}
+.nahled img{width:100%;height:100%;object-fit:cover}
+.nahled span{position:absolute;left:12px;bottom:12px;background:rgba(15,13,27,.72);color:#fff;font-size:.8rem;padding:5px 10px;border-radius:8px}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr;gap:28px}.hero{padding-top:32px}}
+
+/* sekce */
+section{padding:56px 0}
+section.svetla{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.uvod-sekce{max-width:40em;margin-bottom:28px}
+.mrizka{display:grid;gap:18px}
+.tri{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.tri{grid-template-columns:1fr}}
+.karta{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+section.svetla .karta{background:var(--bg)}
+.cislo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--brand);color:var(--brand-ink);font-weight:800;margin-bottom:12px}
+.co-umi{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:700px){.co-umi{grid-template-columns:1fr}}
+.co-umi .karta{display:flex;gap:14px}
+.ikona{flex:0 0 40px;height:40px;border-radius:12px;background:var(--soft);color:var(--brand);display:grid;place-items:center;font-size:1.2rem}
+
+/* obory */
+.obory{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.obory{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.obory{grid-template-columns:1fr}}
+.obor{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.obor img{aspect-ratio:4/3;object-fit:cover;width:100%;background:var(--soft)}
+.obor div{padding:16px 18px 18px}
+.obor q{display:block;color:var(--muted);font-size:.93rem;quotes:"„" "“"}
+
+/* kredit */
+.kredit{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+@media (max-width:860px){.kredit{grid-template-columns:1fr}}
+.cenik{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:8px 22px;box-shadow:var(--shadow)}
+.radek{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.radek:last-child{border-bottom:0}
+.radek b{white-space:nowrap}
+ul.fajfky{list-style:none;padding:0;margin:0 0 1em}
+ul.fajfky li{padding-left:30px;position:relative;margin:.5em 0}
+ul.fajfky li::before{content:"✓";position:absolute;left:0;top:0;color:var(--ok);font-weight:800}
+
+/* otázky */
+.faq{max-width:780px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px 18px;margin-bottom:10px}
+section.svetla details{background:var(--bg)}
+summary{cursor:pointer;font-weight:650;padding:12px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--brand);font-size:1.3rem;line-height:1}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted)}
+
+/* výzva */
+.vyzva{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-radius:24px;padding:44px 28px;text-align:center}
+.vyzva h2{color:#fff}
+.vyzva p{opacity:.92;max-width:34em;margin:0 auto 22px}
+.vyzva .btn{background:#fff;color:#2a1a8a}
+footer{padding:30px 0 40px;color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div class="logo" data-go="1"><i>R</i>Redalio</div>
-    <button class="ghost" id="themeBtn" type="button" aria-label="Přepnout světlý / tmavý režim">◐ Režim</button>
-  </header>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#"><i aria-hidden="true"></i>Redalio</a>
+    <nav class="menu" aria-label="Hlavní menu">
+      <a href="#jak">Jak to funguje</a>
+      <a href="#obory">Ukázky</a>
+      <a href="#kredit">Cena</a>
+      <a href="#otazky">Otázky</a>
+      <a class="btn btn-main" href="https://redalio.com/">Vyzkoušet</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- 1 ÚVOD -->
-  <section class="screen on" id="s1">
-    <h1>Napište, co chcete.<br><em>Za chvíli máte ukázku aplikace.</em></h1>
-    <p class="lead">Popište svými slovy, jakou aplikaci potřebujete. Redalio vám zdarma postaví proklikávací ukázku a pošle ji e-mailem. Když se vám bude líbit, postavíme ostrou verzi.</p>
-    <form class="card" id="orderForm" novalidate>
-      <label for="desc">Co má aplikace umět?</label>
-      <textarea id="desc" placeholder="Např.: Rezervační systém pro moje kadeřnictví. Zákazník si vybere službu, den a čas a dostane potvrzení."></textarea>
-      <div class="chips">
-        <button type="button" class="chip" data-ex="Rezervace termínů pro kadeřnictví: výběr služby, kadeřnice, dne a času, potvrzení e-mailem.">Kadeřnictví</button>
-        <button type="button" class="chip" data-ex="Jednoduchý seznam úkolů pro naši firmu, kde si kolegové odškrtávají hotovou práci.">Úkoly pro tým</button>
-        <button type="button" class="chip" data-ex="Objednávkový formulář pro malou pekárnu s výběrem pečiva a času vyzvednutí.">Pekárna</button>
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="stitek">Vibecoding pro začátečníky</span>
+        <h1>Napište, jaký web chcete. Postavíme ho za vás.</h1>
+        <p class="lead">Redalio je chat, který staví weby. Popíšete česky, co děláte a co má web umět, a za pár chvil máte hotový web i s podstránkami. Úpravy? Prostě napíšete, co změnit.</p>
+        <div class="akce">
+          <a class="btn btn-main" href="https://redalio.com/">Vyzkoušet na redalio.com</a>
+          <a class="btn btn-ghost" href="#jak">Jak to funguje</a>
+        </div>
+        <p class="muted" style="margin-top:14px;font-size:.92rem">Bez programování, bez šablon, bez registrace.</p>
       </div>
-      <label for="email">Váš e-mail (pošleme na něj ukázku)</label>
-      <input type="email" id="email" placeholder="jan@novak.cz" autocomplete="email">
-      <div class="err" id="err1"></div>
-      <button class="btn full" type="submit">Odeslat zadání →</button>
-      <p class="note" style="margin:10px 0 0">Ukázka je zdarma a nezávazná. Toto je maketa, nic se skutečně neodesílá.</p>
-    </form>
-    <div class="steps3">
-      <div class="card"><b>1</b><h3>Napíšete zadání</h3><p>Stačí pár vět běžnou řečí.</p></div>
-      <div class="card"><b>2</b><h3>Dostanete ukázku</h3><p>Odkaz přijde e-mailem, proklikáte si ji.</p></div>
-      <div class="card"><b>3</b><h3>Spustíme ostrou verzi</h3><p>S heslem od nás ji postavíme na vaší adrese.</p></div>
-    </div>
-  </section>
-
-  <!-- 2 PŘIJATO -->
-  <section class="screen" id="s2">
-    <div class="card" style="max-width:620px;margin:16px auto">
-      <h2>Zadání přijato. Stavíme ukázku…</h2>
-      <p class="note" id="s2mail"></p>
-      <div class="bar"><span id="bar2"></span></div>
-      <ul class="prog" id="prog2"></ul>
-      <button class="btn full" id="toMail" disabled>Hotovo: ukázat e-mail →</button>
-    </div>
-  </section>
-
-  <!-- 3 E-MAIL -->
-  <section class="screen" id="s3">
-    <div class="card mail" style="margin-top:16px">
-      <div class="mailhead">
-        <div><span>Od:</span><b>Redalio &lt;ukazky@redalio.com&gt;</b></div>
-        <div><span>Komu:</span><b id="mailTo">jan@novak.cz</b></div>
-        <div><span>Předmět:</span><b>Vaše ukázka je hotová</b></div>
+      <div class="okno" aria-label="Ukázka rozhovoru s Redaliem">
+        <div class="lista" aria-hidden="true"><b></b><b></b><b></b></div>
+        <div class="chat">
+          <div class="bub ja">Chci web pro rodinnou restauraci v Olomouci. Polední menu, galerie a rezervace telefonem.</div>
+          <div class="bub ai">Hotovo. Web má úvod, Polední menu, Galerii a Kontakt. Mám přidat i stránku o nás?</div>
+          <div class="bub ja">Ano, a barvy ať jsou teplejší.</div>
+        </div>
+        <div class="nahled">
+          <img src="https://cdn-src.levnocestovani.eu/fotobanka/ostatni/restaurace-pratele.jpg" alt="Obsluha u stolu s hosty" width="800" height="450" loading="eager">
+          <span>Náhled se mění s každou zprávou</span>
+        </div>
       </div>
-      <p>Dobrý den,</p>
-      <p>vaše ukázka aplikace je připravená. Můžete si ji hned proklikat na tomto odkazu:</p>
-      <a class="linkbox" href="#" id="mailLink" data-go="4">ukazka.redalio.com/AB12CD</a>
-      <p><b>Vaše zadání:</b><br><span class="note" id="mailDesc"></span></p>
-      <p>Pokud se vám ukázka líbí, klikněte v ní na „Chci ji postavit“. Ozveme se vám a pošleme aktivační heslo.</p>
-      <p>Tým Redalio</p>
-      <p class="note">Toto je náhled e-mailu v maketě. Kliknutím na odkaz otevřete ukázku.</p>
+    </div>
+  </div>
+
+  <section class="svetla" id="co">
+    <div class="wrap">
+      <div class="uvod-sekce">
+        <h2>Co je vibecoding?</h2>
+        <p class="muted">Místo kódu popisujete, co chcete. Umělá inteligence kód napíše a vy se díváte na výsledek a říkáte, co dál. Redalio to dělá pro weby malých firem a živnostníků: kadeřnictví, restaurace, řemeslníci, fotografové, penziony.</p>
+      </div>
+      <div class="mrizka co-umi">
+        <div class="karta"><div class="ikona" aria-hidden="true">✎</div><div><h3>Píšete česky</h3><p class="muted">Žádné technické pojmy. Stačí „přidej ceník“ nebo „fotku dej víc nahoru“.</p></div></div>
+        <div class="karta"><div class="ikona" aria-hidden="true">▦</div><div><h3>Web s podstránkami</h3><p class="muted">Úvod, ceník, galerie, kontakt. Menu mezi stránkami funguje hned.</p></div></div>
+        <div class="karta"><div class="ikona" aria-hidden="true">↺</div><div><h3>Vrátit zpět jedním klikem</h3><p class="muted">Nelíbí se vám poslední změna? Vrátíte předchozí verzi.</p></div></div>
+        <div class="karta"><div class="ikona" aria-hidden="true">⇩</div><div><h3>Stáhnete si ho</h3><p class="muted">Hotový web stáhnete jako ZIP a nahrajete na jakýkoli hosting.</p></div></div>
+      </div>
     </div>
   </section>
 
-  <!-- 4 UKÁZKA APLIKACE -->
-  <section class="screen" id="s4">
-    <div class="demo-bar">
-      <div><b>Toto je ukázka</b><br><small>Data nejsou skutečná. Líbí se vám?</small></div>
-      <button class="btn" type="button" data-go="5">Chci ji postavit →</button>
-    </div>
-    <div class="browser">
-      <div class="url"><i></i><i></i><i></i><span id="demoUrl">ukazka.redalio.com/AB12CD</span></div>
-      <div class="app" id="appBody"></div>
-    </div>
-  </section>
-
-  <!-- 5 AKTIVACE -->
-  <section class="screen" id="s5">
-    <div class="card" style="max-width:620px;margin:16px auto" id="actForm">
-      <h2>Postavit ostrou verzi</h2>
-      <p class="note">Aktivační heslo vám pošle Redalio po domluvě. V této maketě funguje cokoli, třeba <b>DEMO</b>.</p>
-      <label for="appName">Název aplikace (bude to vaše adresa)</label>
-      <div class="row"><input type="text" id="appName" placeholder="salon-jana"><span style="align-self:center;color:var(--muted);font-size:14px">.redalio.com</span></div>
-      <label for="pass">Aktivační heslo od Redalia</label>
-      <input type="text" id="pass" placeholder="např. DEMO" autocomplete="off">
-      <div class="err" id="err5"></div>
-      <button class="btn full" id="actBtn" type="button">Aktivovat a postavit</button>
-    </div>
-    <div class="card" style="max-width:620px;margin:16px auto;display:none" id="actRun">
-      <h2>Stavíme ostrou verzi…</h2>
-      <div class="bar"><span id="bar5"></span></div>
-      <ul class="prog" id="prog5"></ul>
-    </div>
-    <div class="card" style="max-width:620px;margin:16px auto;display:none" id="actDone">
-      <div class="big-ok">✓</div>
-      <h2 class="center">Hotovo, aplikace běží!</h2>
-      <p class="center">Najdete ji na adrese<br><a class="linkbox" href="#" id="liveLink" data-go="4" style="display:inline-block">salon-jana.redalio.com</a></p>
-      <h3>Chcete vlastní doménu? (např. www.salon-jana.cz)</h3>
-      <ol class="guide">
-        <li>Přihlaste se tam, kde máte doménu koupenou (Wedos, Forpsi, Active24…).</li>
-        <li>Otevřete nastavení DNS a přidejte nový záznam:</li>
-      </ol>
-      <div class="dns" id="dnsRow">www &nbsp; CNAME &nbsp; salon-jana.redalio.com</div>
-      <ol class="guide" start="3">
-        <li>Napište nám, jakou doménu jste nastavili. Do 24 hodin na ní aplikace poběží i se zabezpečením (https).</li>
-      </ol>
-      <button class="btn sec full" type="button" data-go="6">Pohled majitele Redalia →</button>
+  <section id="jak">
+    <div class="wrap">
+      <div class="uvod-sekce">
+        <h2>Jak to funguje ve 3 krocích</h2>
+      </div>
+      <div class="mrizka tri">
+        <div class="karta"><div class="cislo">1</div><h3>Popište svůj podnik</h3><p class="muted">Kdo jste, co nabízíte, kde vás lidé najdou. Klidně dvě věty.</p></div>
+        <div class="karta"><div class="cislo">2</div><h3>AI postaví návrh</h3><p class="muted">Za chvíli máte web na vlastní adrese, třeba <b>kadernice.redalio.com</b>. Vidíte ho vedle chatu.</p></div>
+        <div class="karta"><div class="cislo">3</div><h3>Ladíte chatem</h3><p class="muted">„Změň barvy na zelenou“, „přidej stránku Galerie“. Každá zpráva web upraví.</p></div>
+      </div>
     </div>
   </section>
 
-  <!-- 6 MAJITEL -->
-  <section class="screen" id="s6">
-    <h2 style="margin-top:10px">Přehled zadání <span class="note" style="font-weight:400">· pohled majitele</span></h2>
-    <p class="note" style="margin:0">Tady vidíte všechna zadání a stav každého z nich. Heslo vygenerujete jedním klikem a pošlete zákazníkovi.</p>
-    <div class="stats" id="stats"></div>
-    <div class="orders" id="orders"></div>
+  <section class="svetla" id="obory">
+    <div class="wrap">
+      <div class="uvod-sekce">
+        <h2>S čím začít</h2>
+        <p class="muted">Pár zadání, která můžete rovnou zkusit. Fotky bere Redalio z naší fotobanky.</p>
+      </div>
+      <div class="mrizka obory">
+        <article class="obor"><img src="https://cdn-src.levnocestovani.eu/fotobanka/ostatni/taverna-v-recku-3-ostatni.jpg" alt="Bílá taverna s modrými okenicemi" width="600" height="450" loading="lazy"><div><h3>Restaurace</h3><q>Web pro rodinnou restauraci s poledním menu a rezervací.</q></div></article>
+        <article class="obor"><img src="https://cdn-src.levnocestovani.eu/fotobanka/potraviny/kava.jpg" alt="Šálek kávy a kávová zrna" width="600" height="450" loading="lazy"><div><h3>Kavárna</h3><q>Malá kavárna u parku, nabídka zákusků a otevírací doba.</q></div></article>
+        <article class="obor"><img src="https://cdn-src.levnocestovani.eu/fotobanka/aktivity/spa-wellness-masaze.jpg" alt="Masáž páru v županech" width="600" height="450" loading="lazy"><div><h3>Masáže a wellness</h3><q>Masážní salon, ceník procedur a dárkové poukazy.</q></div></article>
+        <article class="obor"><img src="https://cdn-src.levnocestovani.eu/fotobanka/francie/korsika/plaz-saleccia-korsika.jpg" alt="Bílá pláž a modré moře" width="600" height="450" loading="lazy"><div><h3>Cestovka</h3><q>Malá cestovní kancelář, zájezdy k moři a kontakt.</q></div></article>
+        <article class="obor"><img src="https://cdn-src.levnocestovani.eu/fotobanka/ostatni/hotel-2.jpg" alt="Pokoj s výhledem a kufrem" width="600" height="450" loading="lazy"><div><h3>Penzion</h3><q>Penzion v horách, pokoje, ceny a jak k nám dojet.</q></div></article>
+        <article class="obor"><img src="https://cdn-src.levnocestovani.eu/fotobanka/chorvatsko/svatba-v-chorvatsku.jpg" alt="Svatební oblouk s květinami" width="600" height="450" loading="lazy"><div><h3>Svatby a akce</h3><q>Svatební koordinátorka, balíčky služeb a reference.</q></div></article>
+      </div>
+    </div>
   </section>
-</div>
 
-<nav class="guide-nav" aria-label="Průvodce ukázkou">
-  <span class="lbl">Průvodce ukázkou</span>
-  <button type="button" data-go="1" title="Úvod">1</button>
-  <button type="button" data-go="2" title="Přijato">2</button>
-  <button type="button" data-go="3" title="E-mail">3</button>
-  <button type="button" data-go="4" title="Ukázka aplikace">4</button>
-  <button type="button" data-go="5" title="Aktivace">5</button>
-  <button type="button" data-go="6" title="Pohled majitele">6</button>
-</nav>
+  <section id="kredit">
+    <div class="wrap kredit">
+      <div>
+        <h2>Kredit v korunách, žádné předplatné</h2>
+        <p class="muted">Neplatíte měsíční paušál. Máte kredit v Kč a z něj se strhne jen to, co AI opravdu udělá. Před každou úpravou vidíte zůstatek a po ní, kolik zpráva stála.</p>
+        <ul class="fajfky">
+          <li>Žádné předplatné, které by běželo samo</li>
+          <li>Cena každé zprávy vidět hned po dokončení</li>
+          <li>Když se něco nepovede, nestrhne se celá částka</li>
+        </ul>
+      </div>
+      <div class="cenik" aria-label="Orientační ceny">
+        <div class="radek"><span>Založení webu s podstránkami</span><b>jednotky Kč</b></div>
+        <div class="radek"><span>Běžná úprava chatem</span><b>zhruba 1–2 Kč</b></div>
+        <div class="radek"><span>Vrátit zpět předchozí verzi</span><b>zdarma</b></div>
+        <div class="radek"><span>Stažení webu jako ZIP</span><b>zdarma</b></div>
+        <div class="radek"><span>Odkaz jen pro prohlížení</span><b>zdarma</b></div>
+      </div>
+    </div>
+  </section>
 
-<script>
-(function(){
-  'use strict';
-  var $ = function(s){ return document.querySelector(s); };
-  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  <section class="svetla" id="otazky">
+    <div class="wrap faq">
+      <h2>Časté otázky</h2>
+      <details><summary>Musím umět programovat?</summary><p>Ne. Celé to ovládáte psaním obyčejných vět. Kód píše AI.</p></details>
+      <details><summary>Musím se registrovat?</summary><p>Ne. Web, který založíte, patří vašemu prohlížeči. Pro pohodlí si k němu můžete nastavit e-mail a heslo a upravovat ho i z jiného počítače.</p></details>
+      <details><summary>Na jaké adrese web poběží?</summary><p>Hned po založení dostane krátkou adresu jako <b>pekarna.redalio.com</b>. Když chcete vlastní doménu, stáhněte si web jako ZIP a nahrajte ho ke svému hostingu.</p></details>
+      <details><summary>Co když se mi změna nelíbí?</summary><p>Klikněte na „Vrátit zpět“. Redalio si pamatuje posledních 10 verzí.</p></details>
+      <details><summary>Můžu web někomu ukázat, aniž by ho mohl měnit?</summary><p>Ano. Pošlete mu odkaz jen pro prohlížení. Upravovat ani čerpat váš kredit nemůže.</p></details>
+      <details><summary>Odkud jsou fotky?</summary><p>Z naší vlastní fotobanky. Na web se tak nedostanou cizí obrázky s nejasnými právy.</p></details>
+    </div>
+  </section>
 
-  // ---- stav ----
-  var S = {
-    desc: 'Rezervace termínů pro kadeřnictví: výběr služby, kadeřnice, dne a času, potvrzení e-mailem.',
-    email: 'jan@novak.cz',
-    code: makeCode(),
-    kind: 'salon',
-    name: '',
-    built: false,
-    timers: []
-  };
-  var orders = [
-    {id:'K7P2QX', email:'petra@kvetinyhana.cz', desc:'E-shop pro květinářství s rozvozem po Praze', st:'wait'},
-    {id:'M3D9RA', email:'tomas@autoservis-tk.cz', desc:'Objednávání aut do servisu s připomínkou SMS', st:'ready'},
-    {id:'Z8F1LW', email:'info@jogastudio.cz', desc:'Rozvrh lekcí jógy a přihlašování na hodiny', st:'pass'},
-    {id:'H2N6TB', email:'pekarna@stastny.cz', desc:'Objednávky pečiva s vyzvednutím na prodejně', st:'live', host:'pekarna-stastny.redalio.com'}
-  ];
-  var ST = {
-    wait:{t:'Čeká na ukázku', c:'p-wait'},
-    ready:{t:'Ukázka hotová', c:'p-ready'},
-    pass:{t:'Čeká na heslo', c:'p-pass'},
-    live:{t:'Postaveno', c:'p-live'}
-  };
+  <section>
+    <div class="wrap">
+      <div class="vyzva">
+        <h2>Zkuste si první web ještě dnes</h2>
+        <p>Napište dvě věty o svém podniku. Za pár minut uvidíte, jak by mohl vypadat váš nový web.</p>
+        <a class="btn" href="https://redalio.com/">Vyzkoušet na redalio.com</a>
+      </div>
+    </div>
+  </section>
+</main>
 
-  function makeCode(){
-    var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s='';
-    for(var i=0;i<6;i++) s+=a[Math.floor(Math.random()*a.length)];
-    return s;
-  }
-  function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function slug(t){
-    var s = String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    return s.slice(0,30).replace(/-+$/,'') || 'moje-aplikace';
-  }
-  function detectKind(d){
-    var t = d.toLowerCase();
-    if(/kade|salon|holi|barber|střih|strih|vlas|kosmet|nehty|manik/.test(t)) return 'salon';
-    if(/úkol|ukol|todo|seznam|odškrt|odskrt/.test(t)) return 'tasks';
-    return 'generic';
-  }
-  function clearTimers(){ S.timers.forEach(clearTimeout); S.timers=[]; }
-  function later(fn,ms){ S.timers.push(setTimeout(fn,ms)); }
-
-  // ---- navigace ----
-  var cur = 1;
-  function go(n){
-    n = +n; if(!(n>=1 && n<=6)) return;
-    clearTimers();
-    cur = n;
-    $$('.screen').forEach(function(el){ el.classList.toggle('on', el.id==='s'+n); });
-    $$('.guide-nav button').forEach(function(b){ b.classList.toggle('on', +b.dataset.go===n); });
-    if(n===2) runBuild();
-    if(n===3) fillMail();
-    if(n===4) renderApp();
-    if(n===5) resetActivation();
-    if(n===6) renderOwner();
-    window.scrollTo(0,0);
-  }
-  document.addEventListener('click', function(e){
-    var el = e.target.closest('[data-go]');
-    if(el){ e.preventDefault(); go(el.dataset.go); }
-  });
-
-  // ---- 1 úvod ----
-  $$('.chip').forEach(function(c){ c.addEventListener('click', function(){ $('#desc').value = c.dataset.ex; $('#desc').focus(); }); });
-  $('#orderForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    var d = $('#desc').value.trim(), m = $('#email').value.trim();
-    if(d.length < 5){ $('#err1').textContent = 'Napište prosím pár slov o tom, co má aplikace umět.'; return; }
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){ $('#err1').textContent = 'Zadejte prosím platný e-mail.'; return; }
-    $('#err1').textContent = '';
-    S.desc = d; S.email = m; S.code = makeCode(); S.kind = detectKind(d); S.built = false; S.name = '';
-    orders = orders.filter(function(o){ return !o.mine; });
-    orders.unshift({id:S.code, email:m, desc:d, st:'wait', mine:true});
-    go(2);
-  });
-
-  // ---- průběh (animace) ----
-  function progress(listSel, barSel, steps, stepMs, done){
-    var ul = $(listSel), bar = $(barSel);
-    ul.innerHTML = steps.map(function(s){ return '<li><span class="dot"></span><span>'+esc(s)+'</span></li>'; }).join('');
-    bar.style.width = '0';
-    var lis = ul.querySelectorAll('li');
-    steps.forEach(function(_,i){
-      later(function(){
-        if(i>0){ lis[i-1].className='done'; lis[i-1].querySelector('.dot').textContent='✓'; }
-        lis[i].className='run';
-        bar.style.width = Math.round(i/steps.length*100)+'%';
-      }, i*stepMs);
-    });
-    later(function(){
-      var l = lis[lis.length-1]; l.className='done'; l.querySelector('.dot').textContent='✓';
-      bar.style.width='100%';
-      done();
-    }, steps.length*stepMs);
-  }
-
-  // ---- 2 přijato ----
-  function myOrder(){ return orders.filter(function(o){ return o.mine; })[0]; }
-  function runBuild(){
-    $('#s2mail').textContent = 'Až bude ukázka hotová, pošleme odkaz na ' + S.email + '. Okno můžete klidně zavřít.';
-    var b = $('#toMail'); b.disabled = true;
-    progress('#prog2','#bar2',[
-      'Čteme vaše zadání',
-      'Navrhujeme obrazovky a tok aplikace',
-      'Stavíme ukázku',
-      'Kontrolujeme, že vše funguje i na mobilu',
-      'Nahráváme na ukazka.redalio.com'
-    ], 900, function(){
-      b.disabled = false;
-      var o = myOrder(); if(o && o.st==='wait') o.st='ready';
-    });
-  }
-  $('#toMail').addEventListener('click', function(){ go(3); });
-
-  // ---- 3 e-mail ----
-  function fillMail(){
-    $('#mailTo').textContent = S.email;
-    $('#mailLink').textContent = 'ukazka.redalio.com/' + S.code;
-    $('#mailDesc').textContent = S.desc;
-    var o = myOrder(); if(o && o.st==='wait') o.st='ready';
-  }
-
-  // ---- 4 ukázka aplikace ----
-  function renderApp(){
-    $('#demoUrl').textContent = 'ukazka.redalio.com/' + S.code;
-    var box = $('#appBody');
-    if(S.kind==='salon') box.innerHTML = salonHTML(), bindSalon();
-    else if(S.kind==='tasks') box.innerHTML = tasksHTML(), bindTasks();
-    else box.innerHTML = genericHTML(), bindGeneric();
-  }
-
-  function salonHTML(){
-    var svc = [['Dámský střih','45 min · 590 Kč'],['Pánský střih','30 min · 350 Kč'],['Barvení','90 min · 1 290 Kč'],['Foukaná','30 min · 390 Kč']];
-    var who = [['Jana','každý den'],['Klára','po–čt'],['Kdokoli','první volná']];
-    var days = [], d = new Date(), names=['ne','po','út','st','čt','pá','so'];
-    for(var i=1; days.length<5; i++){ var x=new Date(d); x.setDate(d.getDate()+i); if(x.getDay()!==0) days.push(names[x.getDay()]+' '+x.getDate()+'. '+(x.getMonth()+1)+'.'); }
-    var times = ['9:00','9:45','10:30','11:15','13:00','13:45','14:30','15:15','16:00'];
-    return '<div class="apphero"><h2>Salon Jana</h2><p>Objednejte se online, za 30 vteřin máte termín.</p></div>'+
-      '<div class="sect">1. Vyberte službu</div><div class="grid2" data-grp="svc">'+svc.map(function(s){return '<button type="button" class="opt" data-v="'+esc(s[0])+'"><b>'+s[0]+'</b><small>'+s[1]+'</small></button>';}).join('')+'</div>'+
-      '<div class="sect">2. Kadeřnice</div><div class="grid2" data-grp="who">'+who.map(function(s){return '<button type="button" class="opt" data-v="'+s[0]+'"><b>'+s[0]+'</b><small>'+s[1]+'</small></button>';}).join('')+'</div>'+
-      '<div class="sect">3. Den</div><div class="times" data-grp="day">'+days.map(function(s){return '<button type="button" data-v="'+s+'">'+s+'</button>';}).join('')+'</div>'+
-      '<div class="sect">4. Čas</div><div class="times" data-grp="time">'+times.map(function(s,i){return '<button type="button" data-v="'+s+'"'+(i%4===1?' disabled':'')+'>'+s+'</button>';}).join('')+'</div>'+
-      '<button class="btn full" id="bookBtn" type="button" disabled>Rezervovat termín</button>'+
-      '<div class="okbox" id="bookOk"></div>';
-  }
-  function bindSalon(){
-    var sel = {};
-    $$('#appBody [data-grp]').forEach(function(g){
-      g.addEventListener('click', function(e){
-        var b = e.target.closest('button'); if(!b || b.disabled) return;
-        g.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); });
-        b.classList.add('sel'); sel[g.dataset.grp] = b.dataset.v;
-        $('#bookBtn').disabled = !(sel.svc && sel.who && sel.day && sel.time);
-      });
-    });
-    $('#bookBtn').addEventListener('click', function(){
-      var ok = $('#bookOk');
-      ok.innerHTML = '<b>✓ Rezervováno!</b><br>'+esc(sel.svc)+' u: '+esc(sel.who)+', '+esc(sel.day)+' v '+esc(sel.time)+'.<br><span class="note">Potvrzení by přišlo na '+esc(S.email)+'.</span>';
-      ok.classList.add('on');
-    });
-  }
-
-  function tasksHTML(){
-    var t = ['Objednat materiál','Zavolat dodavateli','Připravit fakturu za září','Uklidit sklad'];
-    return '<div class="apphero gen"><h2>Úkoly týmu</h2><p>Kdo co dělá a co je hotové.</p></div>'+
-      '<div class="row" style="margin-bottom:12px"><input type="text" id="newTask" placeholder="Nový úkol…"><button class="small-btn pri" id="addTask" type="button">Přidat</button></div>'+
-      '<ul class="tasks" id="taskList">'+t.map(taskLi).join('')+'</ul><p class="note" id="taskCount"></p>';
-  }
-  function taskLi(t){ return '<li><input type="checkbox"><span>'+esc(t)+'</span></li>'; }
-  function bindTasks(){
-    var list = $('#taskList');
-    function count(){ var all=list.querySelectorAll('li').length, dn=list.querySelectorAll('li.dn').length; $('#taskCount').textContent='Hotovo '+dn+' z '+all+'.'; }
-    list.addEventListener('change', function(e){ e.target.closest('li').classList.toggle('dn', e.target.checked); count(); });
-    $('#addTask').addEventListener('click', function(){ var v=$('#newTask').value.trim(); if(!v) return; list.insertAdjacentHTML('beforeend', taskLi(v)); $('#newTask').value=''; count(); });
-    count();
-  }
-
-  function genericHTML(){
-    var title = S.desc.split(/[.:,!?\n]/)[0].trim().slice(0,60) || 'Vaše aplikace';
-    return '<div class="apphero gen"><h2>'+esc(title.charAt(0).toUpperCase()+title.slice(1))+'</h2><p>Vzorová ukázka podle vašeho zadání.</p></div>'+
-      '<div class="grid2" style="margin-bottom:14px">'+
-        '<div class="opt"><b>12</b><small>nových záznamů</small></div>'+
-        '<div class="opt"><b>3</b><small>čeká na vyřízení</small></div>'+
-        '<div class="opt"><b>98 %</b><small>spokojenost</small></div></div>'+
-      '<div class="sect">Nový záznam</div>'+
-      '<label for="gName">Jméno</label><input type="text" id="gName" placeholder="Jan Novák">'+
-      '<label for="gNote">Poznámka</label><input type="text" id="gNote" placeholder="Co potřebujete?">'+
-      '<button class="btn full" id="gSend" type="button">Odeslat</button>'+
-      '<div class="okbox" id="gOk"></div>'+
-      '<p class="note" style="margin-top:14px">Tohle je obecná vzorová ukázka. Ve skutečném provozu by se postavila přesně podle zadání: „'+esc(S.desc)+'“.</p>';
-  }
-  function bindGeneric(){
-    $('#gSend').addEventListener('click', function(){
-      var n = $('#gName').value.trim() || 'Host';
-      var ok = $('#gOk'); ok.innerHTML = '<b>✓ Uloženo.</b> Děkujeme, '+esc(n)+'. Záznam se objeví v přehledu.'; ok.classList.add('on');
-    });
-  }
-
-  // ---- 5 aktivace ----
-  function resetActivation(){
-    if(S.built){ showDone(); return; }
-    $('#actForm').style.display=''; $('#actRun').style.display='none'; $('#actDone').style.display='none';
-    if(!$('#appName').value) $('#appName').value = S.kind==='salon' ? 'salon-jana' : slug(S.desc.split(/[.:,]/)[0]).split('-').slice(0,3).join('-');
-    $('#err5').textContent='';
-    var o = myOrder(); if(o && (o.st==='wait'||o.st==='ready')) o.st='pass';
-  }
-  $('#actBtn').addEventListener('click', function(){
-    var name = slug($('#appName').value), p = $('#pass').value.trim();
-    if(!p){ $('#err5').textContent = 'Zadejte aktivační heslo (v ukázce stačí cokoli, třeba DEMO).'; return; }
-    S.name = name; $('#appName').value = name;
-    $('#actForm').style.display='none'; $('#actRun').style.display='';
-    progress('#prog5','#bar5',[
-      'Ověřujeme heslo',
-      'Stavíme ostrou verzi aplikace',
-      'Zakládáme databázi',
-      'Zapínáme adresu '+name+'.redalio.com',
-      'Zapínáme zabezpečení (https)'
-    ], 800, function(){
-      S.built = true;
-      var o = myOrder(); if(o){ o.st='live'; o.host=name+'.redalio.com'; }
-      later(showDone, 400);
-    });
-  });
-  function showDone(){
-    var host = (S.name||'salon-jana')+'.redalio.com';
-    $('#actForm').style.display='none'; $('#actRun').style.display='none'; $('#actDone').style.display='';
-    $('#liveLink').textContent = host;
-    $('#dnsRow').innerHTML = 'www &nbsp; CNAME &nbsp; '+esc(host);
-  }
-
-  // ---- 6 majitel ----
-  function renderOwner(){
-    var c = {wait:0,ready:0,pass:0,live:0};
-    orders.forEach(function(o){ c[o.st]++; });
-    $('#stats').innerHTML = ['wait','ready','pass','live'].map(function(k){ return '<div class="stat"><b>'+c[k]+'</b><small>'+ST[k].t+'</small></div>'; }).join('');
-    $('#orders').innerHTML = orders.map(function(o,i){
-      var acts = '';
-      if(o.st==='wait') acts = '<span class="note">Ukázka se staví doma ve VS Code…</span>';
-      if(o.st==='ready') acts = '<button class="small-btn" data-act="pass" data-i="'+i+'" type="button">Zákazník chce stavět</button>';
-      if(o.st==='pass') acts = o.pass ? '<span class="code">'+esc(o.pass)+'</span><span class="note">pošlete zákazníkovi</span>' : '<button class="small-btn pri" data-act="gen" data-i="'+i+'" type="button">Vygenerovat heslo</button>';
-      if(o.st==='live') acts = '<span class="note">Běží na <b>'+esc(o.host||'')+'</b></span>';
-      return '<div class="order"><div><b>'+esc(o.desc.length>70?o.desc.slice(0,70)+'…':o.desc)+'</b>'+(o.mine?' <span class="pill p-ready">vaše</span>':'')+
-        '<div class="meta">'+esc(o.email)+' · ukazka.redalio.com/'+esc(o.id)+'</div></div>'+
-        '<span class="pill '+ST[o.st].c+'">'+ST[o.st].t+'</span><div class="acts">'+acts+'</div></div>';
-    }).join('');
-  }
-  $('#orders').addEventListener('click', function(e){
-    var b = e.target.closest('[data-act]'); if(!b) return;
-    var o = orders[+b.dataset.i];
-    if(b.dataset.act==='gen'){ o.pass = (slug(o.desc).split('-')[0].slice(0,5).toUpperCase()||'APP')+'-'+(1000+Math.floor(Math.random()*9000)); }
-    if(b.dataset.act==='pass'){ o.st='pass'; }
-    renderOwner();
-  });
-
-  // ---- režim světlý/tmavý ----
-  $('#themeBtn').addEventListener('click', function(){
-    var r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-    r.dataset.theme = dark ? 'light' : 'dark';
-    try{ localStorage.setItem('redalio-theme', r.dataset.theme); }catch(_){}
-  });
-  try{ var th = localStorage.getItem('redalio-theme'); if(th) document.documentElement.dataset.theme = th; }catch(_){}
-
-  // výchozí položka zákazníka (aby šly obrazovky 2–6 proklikat i napřímo)
-  orders.unshift({id:S.code, email:S.email, desc:S.desc, st:'wait', mine:true});
-  go(1);
-})();
-</script>
+<footer>
+  <div class="wrap">
+    <span>© 2026 Redalio</span>
+    <span><a href="maketa/">Starší maketa</a></span>
+  </div>
+</footer>
 </body>
 </html>
