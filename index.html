@@ -180,8 +180,8 @@ footer a:hover{color:var(--ink)}
       <a href="#jak">Jak to funguje</a><a href="#weby">Ukázky</a><a href="#kredit">Kredit</a><a href="#otazky">Otázky</a>
     </nav>
     <div class="prava">
-      <a class="btn duch prihlasit" href="editor/">Přihlásit</a>
-      <a class="btn tmave" href="editor/">Začít</a>
+      <a class="btn duch prihlasit" href="https://redalio.com/novy?panel=prihlasit">Přihlásit</a>
+      <a class="btn tmave" href="https://redalio.com/novy">Začít</a>
     </div>
   </div>
 </header>
@@ -192,10 +192,10 @@ footer a:hover{color:var(--ink)}
   <div class="wrap">
     <h1>Web, který si <span class="serif">napíšete</span></h1>
     <p class="podnadpis">Popište česky, co potřebujete. Redalio postaví web i s podstránkami a dál ho upravujete obyčejným chatem.</p>
-    <form class="zadani" id="zadani" action="editor/" autocomplete="off" novalidate>
+    <form class="zadani" id="zadani" action="https://redalio.com/novy" method="get" autocomplete="off" novalidate>
       <label for="text" class="vh" style="position:absolute;left:-9999px">Popis webu</label>
       <div class="pril-seznam" id="prilohy" aria-label="Přiložené soubory"></div>
-      <textarea id="text" rows="3" placeholder="Popište web, který chcete…"></textarea>
+      <textarea id="text" name="zadani" rows="3" placeholder="Popište web, který chcete…"></textarea>
       <div class="lista">
         <button type="button" class="btn-pril" id="plus" title="Přidat fotky, logo nebo soubory. Můžete je sem i přetáhnout nebo vložit Ctrl+V."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 11-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg>Fotky a soubory</button>
         <input type="file" id="soubor" accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx" multiple hidden>
@@ -312,9 +312,9 @@ footer a:hover{color:var(--ink)}
   var gal = document.getElementById('galerie');
   ['restaurace', 'cestovka', 'fotograf', 'kadernictvi', 'remeslnik'].forEach(function (k) {
     var o = R.OBORY[k], a = document.createElement('a');
-    a.className = 'web'; a.href = 'editor/#obor=' + k;
+    a.className = 'web'; a.href = 'https://redalio.com/novy?obor=' + k;
     a.innerHTML = '<div class="obr' + (o.hero ? '' : ' bez') + '"' + (o.hero ? ' style="background-image:url(\'' + o.hero + '\')"' : '') + '>' + (o.hero ? '' : svg(o.ikona)) + '<b>' + o.nazev + '</b></div>' +
-      '<div class="pod"><strong style="font-weight:500">' + o.obor + '</strong><span>Podívat se, jak vzniká →</span></div>';
+      '<div class="pod"><strong style="font-weight:500">' + o.obor + '</strong><span>Vyzkoušet zadání →</span></div>';
     gal.appendChild(a);
   });
   var V = RedalioVstup.init({ pole: form, text: text, plus: document.getElementById('plus'), soubor: document.getElementById('soubor'),
@@ -325,12 +325,10 @@ footer a:hover{color:var(--ink)}
     e.preventDefault();
     var t = text.value.trim();
     if (!t) { form.classList.remove('chyba'); void form.offsetWidth; form.classList.add('chyba'); text.focus(); return; }
-    // zadání jde jen do editoru ve stejném prohlížeči (část za # a přílohy v sessionStorage), nikam se neodesílá
+    // zadání jde do aplikace na redalio.com: jen předvyplní pole, samo se neodešle (kredit utratí až klik návštěvníka).
+    // Fotky jiná doména převzít nemůže — přiloží se v aplikaci tlačítkem Fotky.
     V.zastav();
-    var cil = 'editor/#zadani=' + encodeURIComponent(t);
-    var pp = V.polozky();
-    if (!pp.length) { location.href = cil; return; }
-    RedalioVstup.ulozProEditor(pp).then(function () { location.href = cil + '&prilohy=1'; });
+    location.href = 'https://redalio.com/novy?zadani=' + encodeURIComponent(t.slice(0, 2000));
   });
   document.getElementById('koupit').addEventListener('click', function () { document.getElementById('platby-hlaska').classList.add('ukaz'); });
   document.getElementById('zpet-nahoru').addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(function () { text.focus({ preventScroll: true }); }, 400); });
