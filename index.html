@@ -75,7 +75,8 @@ nav.menu a:hover{color:var(--ink)}
 .odeslat svg{width:18px;height:18px}
 .priloha{display:none;align-items:center;gap:6px;font-size:.82rem;color:var(--muted);background:#f5f2ee;border-radius:999px;padding:4px 10px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .priloha.ma{display:inline-flex}
-.zadani .napoveda{font-size:.8rem;color:var(--soft);margin-left:4px}
+.hero .drobne.napoveda-pril{margin-top:16px;color:var(--muted)}
+.hero .napoveda-pril + .drobne{margin-top:6px}
 .zadani.chyba{animation:tres .35s}
 @keyframes tres{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .cipy{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:22px auto 0;max-width:720px}
@@ -193,20 +194,20 @@ footer a:hover{color:var(--ink)}
     <p class="podnadpis">Popište česky, co potřebujete. Redalio postaví web i s podstránkami a dál ho upravujete obyčejným chatem.</p>
     <form class="zadani" id="zadani" action="editor/" autocomplete="off" novalidate>
       <label for="text" class="vh" style="position:absolute;left:-9999px">Popis webu</label>
+      <div class="pril-seznam" id="prilohy" aria-label="Přiložené soubory"></div>
       <textarea id="text" rows="3" placeholder="Popište web, který chcete…"></textarea>
       <div class="lista">
-        <button type="button" class="kulate" id="plus" aria-label="Přidat fotku nebo logo" title="Přidat fotku nebo logo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-        <input type="file" id="soubor" accept="image/*" hidden>
-        <span class="priloha" id="priloha"></span>
-        <span class="napoveda">Enter = odeslat</span>
+        <button type="button" class="btn-pril" id="plus" title="Přidat fotky, logo nebo soubory. Můžete je sem i přetáhnout nebo vložit Ctrl+V."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 11-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg>Fotky a soubory</button>
+        <input type="file" id="soubor" accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx" multiple hidden>
+        <button type="button" class="btn-mic" id="mic" aria-pressed="false" aria-label="Diktovat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <span class="mic-stav" id="mic-stav" hidden><i></i>Nahrávám…</span>
         <button type="submit" class="odeslat" id="odeslat" aria-label="Postavit web" aria-disabled="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>
       </div>
     </form>
     <div class="cipy" id="cipy" aria-label="Rychlý začátek podle oboru"></div>
+    <p class="drobne napoveda-pril">Přiložte fotky, logo nebo podklady (PDF, Word). Stačí je přetáhnout do pole. Zadání můžete i nadiktovat mikrofonem.</p>
     <p class="drobne">Bez programování a bez předplatného. Platíte jen kredit za to, co opravdu použijete.</p>
   </div>
 </section>
@@ -284,6 +285,7 @@ footer a:hover{color:var(--ink)}
 </footer>
 
 <script src="data.js"></script>
+<script src="vstup.js"></script>
 <script>
 (function () {
   var R = window.REDALIO;
@@ -315,19 +317,21 @@ footer a:hover{color:var(--ink)}
       '<div class="pod"><strong style="font-weight:500">' + o.obor + '</strong><span>Podívat se, jak vzniká →</span></div>';
     gal.appendChild(a);
   });
+  var V = RedalioVstup.init({ pole: form, text: text, plus: document.getElementById('plus'), soubor: document.getElementById('soubor'),
+    seznam: document.getElementById('prilohy'), mic: document.getElementById('mic'), micStav: document.getElementById('mic-stav'), zmena: stav });
   text.addEventListener('input', stav);
   text.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit')); } });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var t = text.value.trim();
     if (!t) { form.classList.remove('chyba'); void form.offsetWidth; form.classList.add('chyba'); text.focus(); return; }
-    // zadání jde jen do editoru ve stejném prohlížeči (část za #), nikam se neodesílá
-    location.href = 'editor/#zadani=' + encodeURIComponent(t);
+    // zadání jde jen do editoru ve stejném prohlížeči (část za # a přílohy v sessionStorage), nikam se neodesílá
+    V.zastav();
+    var cil = 'editor/#zadani=' + encodeURIComponent(t);
+    var pp = V.polozky();
+    if (!pp.length) { location.href = cil; return; }
+    RedalioVstup.ulozProEditor(pp).then(function () { location.href = cil + '&prilohy=1'; });
   });
-  // + příloha: jen ukáže název souboru, soubor zůstává v prohlížeči
-  var soubor = document.getElementById('soubor'), pril = document.getElementById('priloha');
-  document.getElementById('plus').addEventListener('click', function () { soubor.click(); });
-  soubor.addEventListener('change', function () { var f = soubor.files && soubor.files[0]; pril.textContent = f ? 'Příloha: ' + f.name : ''; pril.classList.toggle('ma', !!f); });
   document.getElementById('koupit').addEventListener('click', function () { document.getElementById('platby-hlaska').classList.add('ukaz'); });
   document.getElementById('zpet-nahoru').addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(function () { text.focus({ preventScroll: true }); }, 400); });
   stav();

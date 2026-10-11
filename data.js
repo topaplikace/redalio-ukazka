@@ -90,14 +90,89 @@
       ikona: 'foto', karta: 'Přidán web fotografky'
     }
   };
+  // Obor poznáváme jen podle jasných slov. Dřív /vlas/ chytalo „vlastní“, /oprav/ „opravdu“, /foto/ „fotky“.
   function poznejObor(text) {
     var t = (text || '').toLowerCase();
-    if (/kade|vlas|salon|střih|strih|barber/.test(t)) return 'kadernictvi';
-    if (/cest|zájezd|zajezd|dovolen|ostrov|výlet|vylet/.test(t)) return 'cestovka';
-    if (/foto/.test(t)) return 'fotograf';
-    if (/řemesl|remesl|instal|elektr|truhl|zedn|malíř|malir|topen|oprav/.test(t)) return 'remeslnik';
-    if (/restaur|bistro|jídl|jidl|kavár|kavar|hosp|menu|pizz/.test(t)) return 'restaurace';
+    if (/kadeřn|kadern|vlasy|vlasů|vlasov|střih|strih|barber|holičstv|holicstv/.test(t)) return 'kadernictvi';
+    if (/cestovk|cestovní kancel|cestovni kancel|zájezd|zajezd/.test(t)) return 'cestovka';
+    if (/fotograf|focení|foceni|svatební foto|svatebni foto/.test(t)) return 'fotograf';
+    if (/řemesl|remesl|instalatér|instalater|elektrikář|elektrikar|truhlář|truhlar|zedník|zednik|topenář|topenar|opravář|opravar/.test(t)) return 'remeslnik';
+    if (/restaura|bistro|kavárn|kavarn|hospod|pizzer|jídeln|jideln|polední menu|poledni menu/.test(t)) return 'restaurace';
     return '';
   }
-  window.REDALIO = { CDN: CDN, OBORY: OBORY, poznejObor: poznejObor };
+
+  // Zadání mimo pět ukázkových oborů: obecný osobní nebo firemní web, název a nadpis ze zadání.
+  var NEUTRALNI = ['aktivity/odpocinek-u-jezera.jpg', 'ostatni/zena-na-skale-s-vyhledem-na-more-vylet.jpg', 'francie/francouzske-alpy/jezero-tignes-fr-alpy.jpg',
+    'velka-britanie/anglie/lake-district-national-park-anglie.jpg', 'makedonie/zena-na-horach-makedonie.jpg', 'nizozemsko/holandsko/keukenhof-gardens-nizozemsko.jpg',
+    'aktivity/joga.jpg', 'ceska-republika/liberec/jizerka-jizerske-hory.jpg'].map(f);
+  var PREDLOZKY = /^(v|ve|na|z|ze|u|do|od|k|ke|po|při|pri|nad|pod|za|před|pred)$/i;
+  function nominativ(w) {
+    if (/ovi$/.test(w)) return w.slice(0, -3);
+    if (/ice$/.test(w)) return w.slice(0, -3) + 'ika';
+    if (/ce$/.test(w)) return w.slice(0, -2) + 'ka';
+    if (/ře$/.test(w)) return w.slice(0, -2) + 'ra';
+    if (/ze$/.test(w)) return w.slice(0, -2) + 'ga';
+    if (/ii$/.test(w)) return w.slice(0, -1) + 'e';
+    if (/ě$/.test(w)) return w.slice(0, -1) + 'a';
+    if (/ku$/.test(w)) return w.slice(0, -1) + 'a';
+    return w;
+  }
+  function velke(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function jmenoZeZadani(text) {
+    var slova = (text || '').replace(/[.,!?;:„“"()]/g, ' ').split(/\s+/).filter(Boolean);
+    for (var i = 1; i < slova.length; i++) {
+      var w = slova[i];
+      if (!/^[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ][a-záčďéěíňóřšťúůýž]{2,}$/.test(w)) continue;
+      if (PREDLOZKY.test(slova[i - 1])) continue; // „v Olomouci“, „z Brna“ = místo, ne jméno
+      return nominativ(w);
+    }
+    return '';
+  }
+  var VYPLN = /^(může|muze|mohla|mohl|můžu|muzu|můžeme|muzeme|bude|budu|by|bych|si|se|řešit|resit|psát|psat|sdílet|sdilet|ukazovat|ukázat|ukazat|sepisovat|zapisovat|mít|mit|dávat|davat|svoje|své|sve|svůj|svuj|moje|mé|me|naše|nase|jeho|její|jeji|ty|ten|ta|to)$/i;
+  function temaZeZadani(text) {
+    var t = (text || '').replace(/[„“"()!?]/g, ' ').replace(/\s+/g, ' ').trim().replace(/[.;:]+$/, ''), m, tema = '';
+    if ((m = t.match(/(?:^|\s)o\s+(.+)$/i))) tema = 'o ' + m[1];
+    else if ((m = t.match(/(?:^|\s)(?:kde|na kterém|na kterem|ve kterém|ve kterem|abych|aby)\s+(.+)$/i))) {
+      var s = m[1].split(' '); while (s.length && VYPLN.test(s[0])) s.shift(); tema = s.join(' ');
+    } else if ((m = t.match(/(?:^|\s)(?:web|stránk[uy]|blog)\s+(?:pro|na)\s+(.+)$/i))) { var s2 = m[1].split(' '); while (s2.length && VYPLN.test(s2[0])) s2.shift(); tema = s2.join(' '); }
+    var slova = tema.split(' ').filter(Boolean);
+    if (slova.length > 6) slova = slova.slice(0, 6);
+    return slova.join(' ').replace(/[,.]+$/, '');
+  }
+  function obecnyWeb(text, vlastniFotky) {
+    var t = (text || '').toLowerCase();
+    var firma = /firm|s\.r\.o|služb|sluzb|obchod|e-?shop|prodej|podnik|živnost|zivnost|zakázk|zakazk/.test(t);
+    var jmeno = jmenoZeZadani(text), tema = temaZeZadani(text);
+    if (jmeno && tema && tema.toLowerCase().indexOf(jmeno.toLowerCase().slice(0, 4)) === 0) tema = '';
+    var nazev = jmeno && tema ? jmeno + ' — ' + tema : jmeno ? jmeno : tema ? velke(tema) : (firma ? 'Vaše firma' : 'Váš nový web');
+    var h = 0; for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0;
+    var k = h % NEUTRALNI.length, fotky = NEUTRALNI.slice(k).concat(NEUTRALNI.slice(0, k));
+    var vlastni = (vlastniFotky || []).filter(Boolean);
+    var tem = tema ? ' Téma: ' + tema + '.' : '';
+    return {
+      klic: 'obecny', obecny: true, firma: firma, obor: firma ? 'Firemní web' : 'Osobní web', nazev: nazev, mesto: '',
+      zadani: text, stitek: firma ? 'Firemní web' : 'Osobní web',
+      slogan: (firma ? 'Co děláme, pro koho a jak nás zastihnout.' : 'Zápisky, plány a inspirace na jednom místě.') + tem,
+      cta: firma ? 'Nezávazně poptat' : 'Napsat mi', hero: vlastni[0] || fotky[0],
+      nabidkaNazev: firma ? 'Služby' : 'Zápisky',
+      nabidkaUvod: firma ? 'Každou zakázku nejdřív probereme, cenu řekneme předem.' : 'Krátké texty o tom, co mě zrovna zaměstnává. Nové přibývají průběžně.',
+      polozky: firma ? [
+        { n: 'Konzultace', p: 'probereme, co potřebujete', c: 'zdarma', foto: fotky[1] },
+        { n: 'Realizace', p: 'od návrhu po předání', c: 'dohodou', foto: fotky[2] },
+        { n: 'Servis', p: 'když je potřeba něco doladit', c: 'dohodou', foto: fotky[3] },
+        { n: 'Na míru', p: 'cokoli, co v nabídce nevidíte', c: 'dohodou', foto: fotky[4] }
+      ] : [
+        { n: 'Proč tenhle web vznikl', p: 'první zápis a pár slov na úvod', c: '11. 10. 2026', foto: vlastni[1] || fotky[1] },
+        { n: 'Co mě inspiruje', p: 'místa, lidé a věci, které dávají sílu', c: '4. 10. 2026', foto: vlastni[2] || fotky[2] },
+        { n: 'Malé kroky', p: 'co se povedlo tento měsíc', c: '27. 9. 2026', foto: fotky[3] },
+        { n: 'Plány na příští rok', p: 'seznam, ke kterému se budu vracet', c: '20. 9. 2026', foto: fotky[4] }
+      ],
+      vyhody: firma ? ['Odpověď do druhého dne', 'Cena předem', 'Faktura i pro firmy'] : ['Osobní zápisky', 'Fotky a inspirace', 'Kontakt jen pro blízké'],
+      galerie: vlastni.concat(fotky).slice(0, 6),
+      kontakt: firma ? { adresa: 'Adresu doplníte jednou větou', tel: '+420 600 000 000', doba: 'Po–Pá 9.00–17.00' } : { adresa: 'Napište přes formulář', tel: '', doba: 'Odpovídám obvykle do pár dnů' },
+      kontaktNadpis: firma ? 'Ozvěte se' : 'Napište mi',
+      ikona: 'foto', karta: 'Přidán web „' + nazev + '“', popisWebu: (firma ? 'firemní web' : 'osobní web')
+    };
+  }
+  window.REDALIO = { CDN: CDN, OBORY: OBORY, poznejObor: poznejObor, obecnyWeb: obecnyWeb };
 })();

@@ -130,13 +130,49 @@ svg{flex:none}
 .odeslat:hover{background:var(--cta-hover)}
 .odeslat[aria-disabled=true]{background:#d9d3cd;cursor:default}
 .odeslat .ik{width:16px;height:16px}
-.skladac .kredit-info{font-size:.75rem;color:var(--soft)}
+.skladac .kredit-info{font-size:.75rem;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.skladac .btn-pril{height:32px}.skladac .btn-mic{width:32px;height:32px}
+.mic-stav:not([hidden]) ~ .kredit-info{display:none}
+.zp.ja .pril-zpr{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-top:6px;max-width:88%}
+.zp.ja .pril-zpr img{width:72px;height:72px;object-fit:cover;border-radius:12px;display:block;border:1px solid var(--line)}
+.zp.ja .pril-zpr .soub{display:inline-flex;align-items:center;height:28px;font-size:.78rem;color:var(--muted);background:#efece8;border-radius:999px;padding:0 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.text p.ukazka-pozn{font-size:.8rem;color:var(--soft);margin-top:4px}
+.adr-radek{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 14px 10px;font-size:.84rem;color:var(--muted)}
+.adr-radek b{color:var(--ink);font-weight:500}
+.odkaz-btn{border:0;background:none;padding:0;color:var(--cta);font:inherit;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+/* adresní řádek nad náhledem */
+.url-lista{display:flex;align-items:center;gap:6px;height:42px;padding:0 8px 0 12px;border-bottom:1px solid var(--line);background:var(--card);flex:none;min-width:0}
+.url-lista[hidden]{display:none!important}
+.url-lista .zamek{width:14px;height:14px;color:#1f7a3a;flex:none}
+.url-lista a{min-width:0;overflow:hidden;white-space:nowrap;font-size:.88rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.url-lista a>span{overflow:hidden;text-overflow:ellipsis}
+.url-lista a b{color:var(--ink);font-weight:600}
+.url-lista a:hover b{text-decoration:underline}
+.url-lista a .ven{width:13px;height:13px;flex:none}
+.url-lista .ikb{width:28px;height:28px;flex:none}.url-lista .ikb .ik{width:15px;height:15px}
+.url-lista .zmenit{margin-left:auto;flex:none;height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-size:.8rem;color:var(--ink);white-space:nowrap}
+.url-lista .zmenit:hover{border-color:#cfc8c0}
+#menu-adresa{width:340px;max-width:calc(100vw - 16px);padding:14px}
+#menu-adresa h4{margin:0 0 4px;font-size:.95rem}
+#menu-adresa .pod{margin:0 0 10px;font-size:.8rem;color:var(--muted)}
+.adr-pole{display:flex;align-items:center;border:1px solid var(--line2);border-radius:12px;padding:0 12px;height:42px;background:#fff}
+.adr-pole:focus-within{border-color:#f0cfb2;box-shadow:0 0 0 3px rgba(255,128,34,.12)}
+.adr-pole input{flex:1;min-width:0;border:0;outline:0;font:500 .95rem Inter,sans-serif;color:var(--ink);background:transparent;text-align:right}
+.adr-pole span{color:var(--muted);font-size:.92rem}
+.adr-stav{min-height:20px;margin:6px 2px 10px;font-size:.8rem;color:var(--muted)}
+.adr-stav.ok{color:#1f7a3a}.adr-stav.chyba{color:#b3261e}
+#menu-adresa .pill.cta{width:100%;justify-content:center;height:36px}
+#menu-adresa .pill.cta[disabled]{opacity:.45;cursor:default}
+.vlastni-dom{display:flex;align-items:center;gap:8px;padding:10px 2px 2px;font-size:.84rem;color:var(--muted)}
+.vlastni-dom .pripr{margin-left:auto;font-size:.72rem;font-weight:600;color:var(--tint-ink);background:var(--tint);border-radius:999px;padding:2px 8px;white-space:nowrap}
+#menu-adresa .drob{margin:8px 2px 0;font-size:.76rem;color:var(--soft)}
 
 /* náhled */
 .nahled{min-width:0;min-height:0;padding:0 8px 8px 0;display:flex}
-.ram{flex:1;min-width:0;position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-1);display:flex;justify-content:center}
+.ram{flex:1;min-width:0;position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-1);display:flex;flex-direction:column}
+.ram .telo{flex:1;min-height:0;position:relative;display:flex;justify-content:center}
 .platno{position:relative;width:100%;height:100%;transition:width .3s ease}
-.ram.mobil{background:#f0ede9}
+.ram.mobil .telo{background:#f0ede9}
 .ram.mobil .platno{width:390px;max-width:100%;margin:14px 0;height:calc(100% - 28px);border-radius:28px;overflow:hidden;border:6px solid #1c1917;box-shadow:var(--sh-pop)}
 iframe#web{display:block;width:100%;height:100%;border:0;background:#fff;transition:opacity .25s}
 .prazdno{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;overflow:hidden;isolation:isolate}
@@ -288,11 +324,13 @@ iframe#web{display:block;width:100%;height:100%;border:0;background:#fff;transit
     <div class="navrhy" id="navrhy"></div>
     <form class="skladac" id="skladac" autocomplete="off" novalidate>
       <label for="vstup" style="position:absolute;left:-9999px">Zpráva pro Redalio</label>
+      <div class="pril-seznam" id="prilohy" aria-label="Přiložené soubory"></div>
       <textarea id="vstup" rows="2" placeholder="Popište web, který chcete…"></textarea>
       <div class="rad">
-        <button type="button" class="kulate" id="plus" aria-label="Přidat fotku nebo logo" title="Přidat fotku nebo logo"><svg class="ik"><use href="#i-plus"/></svg></button>
-        <input type="file" id="soubor" accept="image/*" hidden>
-        <span class="priloha" id="priloha"></span>
+        <button type="button" class="btn-pril" id="plus" title="Přidat fotky, logo nebo soubory. Můžete je sem i přetáhnout nebo vložit Ctrl+V."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 11-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg><span class="pril-txt">Fotky a soubory</span></button>
+        <input type="file" id="soubor" accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx" multiple hidden>
+        <button type="button" class="btn-mic" id="mic" aria-pressed="false" aria-label="Diktovat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <span class="mic-stav" id="mic-stav" hidden><i></i>Nahrávám…</span>
         <span class="kredit-info" id="kredit-info"></span>
         <button type="submit" class="odeslat" id="odeslat" aria-label="Odeslat" aria-disabled="true"><svg class="ik"><use href="#i-nahoru"/></svg></button>
       </div>
@@ -310,11 +348,14 @@ iframe#web{display:block;width:100%;height:100%;border:0;background:#fff;transit
       </div>
     </div>
     <div class="ram" id="ram">
+      <div class="url-lista" id="url-lista" hidden><svg class="zamek" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><a id="url-odkaz" href="#" target="_blank" rel="noopener" title="Otevřít web v nové kartě"><span><b id="url-sub">novy-web</b>.redalio.com<span id="url-cesta"></span></span><svg class="ven" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><button class="ikb" id="url-kopie" type="button" aria-label="Kopírovat adresu" title="Kopírovat adresu"><svg class="ik"><use href="#i-kopie"/></svg></button><button class="zmenit" id="url-zmenit" type="button" aria-haspopup="true" aria-expanded="false">Změnit adresu</button></div>
+      <div class="telo">
       <div class="platno" id="platno">
         <div class="prazdno" id="prazdno"><h3>Tady se objeví váš web</h3><p>Napište vlevo, co potřebujete. Redalio web postaví a ukáže ho tady.</p></div>
         <div class="kostra" id="kostra" aria-hidden="true"><i style="height:40px;width:100%"></i><i style="flex:1;min-height:180px"></i><i style="height:28px;width:45%"></i><div style="display:flex;gap:14px"><i style="height:120px;flex:1"></i><i style="height:120px;flex:1"></i><i style="height:120px;flex:1"></i></div></div>
         <iframe id="web" title="Náhled webu" hidden></iframe>
         <div class="stavba" id="stavba"><span class="stitek"><span class="toc"></span><span id="stavba-text" class="trpyt">Stavím úvodní stránku…</span></span></div>
+      </div>
       </div>
       <div class="stranky" id="stranky"></div>
     </div>
@@ -330,9 +371,18 @@ iframe#web{display:block;width:100%;height:100%;border:0;background:#fff;transit
   <a class="polozka" href="../"><svg class="ik"><use href="#i-domu"/></svg>Zpět na úvod</a>
 </div>
 <div class="pop" id="menu-stranky" role="menu"></div>
+<div class="pop" id="menu-adresa" role="dialog" aria-label="Adresa webu">
+  <h4>Adresa webu</h4><p class="pod">Na téhle adrese web uvidí návštěvníci. Změnit ji může jen majitel.</p>
+  <label class="adr-pole"><input id="adr-vstup" maxlength="30" autocomplete="off" spellcheck="false" aria-label="Název adresy"><span>.redalio.com</span></label>
+  <p class="adr-stav" id="adr-stav" aria-live="polite"></p>
+  <button class="pill cta" id="adr-ulozit" type="button">Uložit adresu</button>
+  <div class="vlastni-dom"><span>Vlastní doména (např. mojefirma.cz)</span><span class="pripr">připravujeme</span></div>
+  <p class="drob">Po změně se staré odkazy samy přesměrují na novou adresu.</p>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="../data.js"></script>
+<script src="../vstup.js"></script>
 <script src="editor.js"></script>
 </body>
 </html>

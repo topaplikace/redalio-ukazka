@@ -12,20 +12,20 @@
 
   // ---------- ukázkový web (srcdoc v iframu) ----------
   var BARVY = {
-    restaurace: '#a8432a', kadernictvi: '#8a4f68', cestovka: '#1d6a86', remeslnik: '#2f5d50', fotograf: '#6d5a48'
+    restaurace: '#a8432a', kadernictvi: '#8a4f68', cestovka: '#1d6a86', remeslnik: '#2f5d50', fotograf: '#6d5a48', obecny: '#5a5f8a'
   };
   function paleta(web) {
     if (web.paleta === 'tmava') return { bg: '#16130f', bg2: '#1f1b16', ink: '#f4ede3', muted: '#b9ab9a', line: '#2e2820', ak: '#d1aa5e', akInk: '#16130f', karta: '#1f1b16' };
-    return { bg: '#faf6f0', bg2: '#f2ebe1', ink: '#2a211a', muted: '#6f6256', line: '#e6ddd1', ak: BARVY[web.obor], akInk: '#ffffff', karta: '#ffffff' };
+    return { bg: '#faf6f0', bg2: '#f2ebe1', ink: '#2a211a', muted: '#6f6256', line: '#e6ddd1', ak: BARVY[web.o.klic], akInk: '#ffffff', karta: '#ffffff' };
   }
   function stranky(web) {
-    var o = R.OBORY[web.obor], s = [{ k: 'uvod', n: 'Úvod', cesta: '/' }, { k: 'nabidka', n: o.nabidkaNazev, cesta: '/' + o.nabidkaNazev.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-') }];
+    var o = web.o, s = [{ k: 'uvod', n: 'Úvod', cesta: '/' }, { k: 'nabidka', n: o.nabidkaNazev, cesta: '/' + o.nabidkaNazev.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-') }];
     if (web.galerie) s.push({ k: 'galerie', n: 'Galerie', cesta: '/galerie' });
     s.push({ k: 'kontakt', n: 'Kontakt', cesta: '/kontakt' });
     return s;
   }
   function webHTML(web, stranka) {
-    var o = R.OBORY[web.obor], p = paleta(web), s = stranky(web);
+    var o = web.o, p = paleta(web), s = stranky(web);
     var nav = s.map(function (x) { return '<a href="#" data-str="' + x.k + '"' + (x.k === stranka ? ' class="akt"' : '') + '>' + esc(x.n) + '</a>'; }).join('');
     var heroBg = o.hero ? "background-image:linear-gradient(180deg,rgba(20,12,6,.25),rgba(20,12,6,.72)),url('" + o.hero + "')" : 'background:linear-gradient(135deg,' + p.ak + ',#1c1917)';
     var polozky = function (kolik) {
@@ -38,7 +38,7 @@
       return '<section class="sek"><div class="w"><p class="nad">Galerie</p><h2>Jak to u nás vypadá</h2><div class="gal">' +
         o.galerie.map(function (g, i) { return '<div class="g g' + i + '" style="background-image:url(\'' + g + '\')"></div>'; }).join('') + '</div></div></section>';
     };
-    var kontakt = '<section class="sek kon"><div class="w kgrid"><div><p class="nad">Kontakt</p><h2>Zastavte se</h2><p class="m">' + esc(o.kontakt.adresa) + '<br>' + esc(o.kontakt.tel) + '<br>' + esc(o.kontakt.doba) + '</p></div>' +
+    var kontakt = '<section class="sek kon"><div class="w kgrid"><div><p class="nad">Kontakt</p><h2>' + esc(o.kontaktNadpis || 'Zastavte se') + '</h2><p class="m">' + [o.kontakt.adresa, o.kontakt.tel, o.kontakt.doba].filter(Boolean).map(esc).join('<br>') + '</p></div>' +
       '<div class="kk"><p class="m" style="margin:0 0 12px">Napište nám, ozveme se do druhého dne.</p><div class="pole">Jméno</div><div class="pole">E-mail nebo telefon</div><div class="pole vys">Zpráva</div><a href="#" class="btn" data-str="kontakt">Odeslat</a><p class="drob">Formulář je v ukázce jen pro vzhled.</p></div></div></section>';
     var obsah = '';
     if (stranka === 'uvod') {
@@ -74,7 +74,7 @@
     return '<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">' +
       '<style>' + css + '</style></head><body><header><div class="w"><a href="#" class="lg" data-str="uvod">' + esc(o.nazev) + '</a><nav>' + nav + '</nav><a href="#" class="btn" data-str="kontakt">' + esc(o.cta) + '</a></div></header>' +
-      obsah + '<footer><div class="w"><span>© 2026 ' + esc(o.nazev) + ' · ' + esc(o.mesto) + '</span><span>Vytvořeno v Redaliu</span></div></footer>' +
+      obsah + '<footer><div class="w"><span>© 2026 ' + esc(o.nazev) + (o.mesto ? ' · ' + esc(o.mesto) : '') + '</span><span>Vytvořeno v Redaliu</span></div></footer>' +
       '<script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;e.preventDefault();if(a.dataset.str)parent.postMessage({redalioStranka:a.dataset.str},"*")});<\/script></body></html>';
   }
 
@@ -89,6 +89,7 @@
     iframe.onload = function () { iframe.style.opacity = '1'; };
     var n = (stranky(st.web).filter(function (x) { return x.k === st.stranka; })[0] || { n: 'Úvod' }).n;
     $('vyber-jm').textContent = n; $('m-vyber-jm').textContent = n;
+    if (typeof ukazAdresu === 'function') ukazAdresu();
     if (st.pohled === 'stranky') kresliStranky();
   }
   window.addEventListener('message', function (e) {
@@ -106,7 +107,7 @@
   function kresliStranky() {
     var el = $('stranky');
     if (!st.web) { el.innerHTML = '<h3>Stránky</h3><p class="pod">Zatím žádné. Napište vlevo, jaký web chcete.</p>'; return; }
-    var o = R.OBORY[st.web.obor];
+    var o = st.web.o;
     var foto = { uvod: o.hero, nabidka: (o.polozky[0] || {}).foto, galerie: o.galerie[1], kontakt: o.galerie[2] || o.hero };
     el.innerHTML = '<h3>Stránky webu</h3><p class="pod">' + esc(o.nazev) + ' · ' + stranky(st.web).length + ' stránky</p><div class="mrizka">' +
       stranky(st.web).map(function (x) { var f = foto[x.k]; return '<button class="str" data-k="' + x.k + '"><div class="nah' + (f ? '' : ' bez') + '"' + (f ? ' style="background-image:url(\'' + f + '\')"' : '') + '></div><b>' + esc(x.n) + '</b><span>' + esc(x.cesta) + '</span></button>'; }).join('') + '</div>';
@@ -117,7 +118,17 @@
   var zpravy = $('zpravy');
   function dolu() { zpravy.scrollTop = zpravy.scrollHeight; }
   function pridej(html, cls) { var d = document.createElement('div'); d.className = 'zp ' + cls; d.innerHTML = html; zpravy.appendChild(d); dolu(); return d; }
-  function zpravaJa(text, priloha) { pridej('<div class="bublina">' + esc(text) + '</div>' + (priloha ? '<span class="pril">Příloha: ' + esc(priloha) + '</span>' : ''), 'ja'); }
+  function zpravaJa(text, prilohy) {
+    var d = pridej('<div class="bublina">' + esc(text) + '</div>', 'ja');
+    if (prilohy && prilohy.length) {
+      var box = document.createElement('div'); box.className = 'pril-zpr';
+      prilohy.forEach(function (p) {
+        if (p.obr && p.url) { var img = document.createElement('img'); img.alt = p.nazev; img.title = p.nazev; img.src = p.url; box.appendChild(img); }
+        else { var x = document.createElement('span'); x.className = 'soub'; x.textContent = 'Příloha: ' + p.nazev; box.appendChild(x); }
+      });
+      d.appendChild(box); dolu();
+    }
+  }
   function prubeh(kroky) {
     var d = pridej('<div class="prubeh">' + kroky.map(function (k) { return '<div class="krok"><span class="st"><span class="tecka"></span></span><span>' + esc(k) + '</span></div>'; }).join('') +
       '<button type="button" class="souhrn">' + ik('ok') + '<span class="sh"></span></button></div>', 'ai');
@@ -136,7 +147,7 @@
     };
   }
   function odpoved(odstavce, cena, vratit) {
-    var d = pridej('<div class="text">' + odstavce.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>' +
+    var d = pridej('<div class="text">' + odstavce.map(function (p) { return /^<span class="ukazka-pozn-in">/.test(p) ? '<p class="ukazka-pozn">' + p + '</p>' : '<p>' + p + '</p>'; }).join('') + '</div>' +
       '<div class="pata"><button class="ikb" data-a="palec" aria-pressed="false" aria-label="Dobrá odpověď" title="Dobrá odpověď">' + ik('palec') + '</button>' +
       '<button class="ikb" data-a="dolu" aria-pressed="false" aria-label="Špatná odpověď" title="Špatná odpověď">' + ik('palec', 'otoc') + '</button>' +
       '<button class="ikb" data-a="kopie" aria-label="Kopírovat" title="Kopírovat">' + ik('kopie') + '</button>' +
@@ -166,8 +177,10 @@
     var d = pridej('<div class="karta-web"><div class="hl"><span class="ok"><i>' + ik('ok') + '</i>' + esc(o.karta) + '</span></div>' +
       '<div class="foto' + (o.hero ? '' : ' bez') + '"' + (o.hero ? ' style="background-image:url(\'' + o.hero + '\')"' : '') + '><span>' + esc(o.nazev) + '</span></div>' +
       '<div class="detaily"><ul>' + stranky(st.web).map(function (x) { return '<li>' + esc(x.n) + ' <span style="color:var(--soft)">' + esc(x.cesta) + '</span></li>'; }).join('') + '<li>fotky z fotobanky Redalia, texty česky</li></ul></div>' +
+      '<div class="adr-radek">Adresa: <b class="adr-txt">' + esc(st.web.adresa) + '.redalio.com</b><button type="button" class="odkaz-btn" data-a="adr">Změnit</button></div>' +
       '<div class="tl"><button type="button" data-a="det">Detaily</button><button type="button" data-a="nah" class="aktivni">Zobrazeno</button></div></div>', 'ai');
     d.querySelector('[data-a=det]').addEventListener('click', function (e) { var x = d.querySelector('.detaily'); x.classList.toggle('ukaz'); e.currentTarget.textContent = x.classList.contains('ukaz') ? 'Skrýt' : 'Detaily'; });
+    d.querySelector('[data-a=adr]').addEventListener('click', function (e) { e.stopPropagation(); if (window.innerWidth <= 820) prepniTab('nahled'); setTimeout(function () { otevriAdresu(); }, 30); });
     d.querySelector('[data-a=nah]').addEventListener('click', function () { st.stranka = 'uvod'; nastavPohled('nahled'); vykresli(true); prepniTab('nahled'); });
   }
   function navrhy(seznam) {
@@ -185,33 +198,52 @@
   }
 
   // ---------- simulace ----------
-  async function postav(text) {
-    var klic = R.poznejObor(text), znamy = !!klic; klic = klic || 'restaurace';
-    var o = R.OBORY[klic], t0 = Date.now();
-    pridej('<div class="text"><p>' + (znamy ? 'Rozumím. Postavím <strong>' + esc(o.karta.replace('Přidán ', '')) + '</strong> s úvodem, stránkou „' + esc(o.nabidkaNazev) + '“ a kontaktem.' :
-      'V tomhle návrhu umím pět oborů. Ukážu vám to na webu <strong>restaurace</strong>, ve skutečném Redaliu postavím web podle vašeho zadání.') + '</p></div>', 'ai');
-    var kroky = ['Promýšlím strukturu webu', 'Vybírám fotky z fotobanky', 'Stavím úvodní stránku', 'Stavím stránku „' + o.nabidkaNazev + '“', 'Přidávám kontakt a patičku'];
+  async function postav(text, prilohy) {
+    var klic = R.poznejObor(text), t0 = Date.now();
+    var vlastni = (prilohy || []).filter(function (p) { return p.obr && p.url; }).map(function (p) { return p.url; });
+    var o = klic ? Object.assign({}, R.OBORY[klic]) : R.obecnyWeb(text, vlastni);
+    if (klic && vlastni.length) { o.hero = vlastni[0]; o.galerie = vlastni.concat(o.galerie).slice(0, 6); }
+    var popis = o.obecny ? o.popisWebu + ' <strong>' + esc(o.nazev) + '</strong>' : '<strong>' + esc(o.karta.replace('Přidán ', '')) + '</strong>';
+    pridej('<div class="text"><p>Rozumím. Postavím ' + popis + ' s úvodem, stránkou „' + esc(o.nabidkaNazev) + '“ a kontaktem.' +
+      (vlastni.length ? ' Vaši fotku dám na úvod.' : '') + '</p></div>', 'ai');
+    var kroky = ['Promýšlím strukturu webu', vlastni.length ? 'Zpracovávám vaše fotky' : 'Vybírám fotky z fotobanky', 'Stavím úvodní stránku', 'Stavím stránku „' + o.nabidkaNazev + '“', 'Přidávám kontakt a patičku'];
     var pr = prubeh(kroky);
     $('prazdno').hidden = true; $('kostra').classList.add('ukaz');
     for (var i = 0; i < kroky.length; i++) { pr.krok(i); stavba(kroky[i] + '…'); await cekej(850); }
-    st.web = { obor: klic, paleta: 'zakladni', galerie: false }; st.stranka = 'uvod';
-    $('kostra').classList.remove('ukaz'); stavba(''); vykresli(true);
+    st.web = { o: o, paleta: 'zakladni', galerie: false, adresa: navrhAdresy(o.nazev) }; st.stranka = 'uvod';
+    $('kostra').classList.remove('ukaz'); stavba(''); vykresli(true); ukazAdresu();
     pr.hotovo(Math.round((Date.now() - t0) / 1000));
     $('projekt-jm').textContent = o.nazev; $('menu-jm').textContent = o.nazev;
     kartaWebu(o);
     var cena = 1.84; nastavKredit(st.kredit - cena);
-    odpoved(['Web <strong>' + esc(o.nazev) + '</strong> je hotový: úvod s velkou fotkou, ' + esc(o.nabidkaNazev.toLowerCase()) + ' s cenami a kontakt. Všechno česky.',
-      'Název, ceny, adresa a telefon jsou zatím ukázkové. Pošlete mi ty skutečné a hned je přepíšu. Můžu taky změnit barvy nebo přidat galerii.'], cena, null);
-    navrhy(['Změň barvy na tmavé a zlaté', 'Přidej galerii fotek', 'Přepiš telefon']);
+    odpoved(['Web <strong>' + esc(o.nazev) + '</strong> je hotový: úvod s velkou fotkou, stránka „' + esc(o.nabidkaNazev) + '“ a kontakt. Všechno česky.',
+      o.obecny ? 'Texty a fotky jsou zatím ukázkové. Napište, co tam má být, a pošlete svoje fotky (tlačítko „Fotky a soubory“ nebo je sem přetáhněte).'
+        : 'Název, ceny, adresa a telefon jsou zatím ukázkové. Pošlete mi ty skutečné a hned je přepíšu. Můžu taky změnit barvy nebo přidat galerii.',
+      '<span class="ukazka-pozn-in">Tohle je ukázka vzhledu. Skutečné Redalio postaví web přesně podle vašeho zadání.</span>'], cena, null);
+    navrhy(['Změň barvy na tmavé a zlaté', 'Přidej galerii fotek']);
     $('vstup').placeholder = 'Napište úpravu…';
     if (window.innerWidth <= 820 && st.tab !== 'nahled') $('t-bod').classList.add('ukaz');
   }
-  async function uprav(text) {
-    var t = text.toLowerCase(), o = R.OBORY[st.web.obor], pred = JSON.parse(JSON.stringify(st.web));
+  async function uprav(text, prilohy) {
+    var t = text.toLowerCase(), o = st.web.o, pred = JSON.parse(JSON.stringify(st.web));
     var druh = /barv|tmav|zlat|světl|svetl/.test(t) ? 'barvy' : /galer|fotk/.test(t) ? 'galerie' : '';
+    var vlastni = (prilohy || []).filter(function (p) { return p.obr && p.url; }).map(function (p) { return p.url; });
+    if (vlastni.length) {
+      var t1 = Date.now(), pr1 = prubeh(['Zpracovávám vaše fotky', 'Přidávám je do galerie']);
+      for (var j = 0; j < 2; j++) { pr1.krok(j); stavba(['Zpracovávám vaše fotky…', 'Přidávám je do galerie…'][j]); await cekej(700); }
+      st.web.o = Object.assign({}, o, { galerie: vlastni.concat(o.galerie).slice(0, Math.max(6, vlastni.length)) });
+      st.web.galerie = true; st.stranka = 'galerie'; stavba(''); vykresli(true);
+      pr1.hotovo(Math.round((Date.now() - t1) / 1000));
+      var c1 = 0.88; nastavKredit(st.kredit - c1);
+      var zp1 = function () { st.web = pred; if (!stranky(st.web).some(function (x) { return x.k === st.stranka; })) st.stranka = 'uvod'; vykresli(true); pridej('<div class="text"><p style="color:var(--muted)">Vráceno na předchozí verzi.</p></div>', 'ai'); toast('Vráceno zpět'); };
+      odpoved(['Vaše fotky (' + vlastni.length + ') jsem dal do <strong>galerie</strong>. Zůstávají jen ve vašem prohlížeči, nikam se neposílají.'], c1, zp1);
+      navrhy(['Změň barvy na tmavé a zlaté']);
+      return;
+    }
     if (!druh) {
       await cekej(500);
-      odpoved(['Tohle je jen návrh vzhledu, upravit tu umím dvě věci: <strong>barvy</strong> a <strong>galerii</strong>. Ve skutečném Redaliu napíšete jakoukoli úpravu a já ji udělám.'], 0, null);
+      odpoved(['V téhle ukázce umím změnit <strong>barvy</strong>, přidat <strong>galerii</strong> a vložit vaše fotky. Skutečné Redalio udělá i úpravu „' + esc(text) + '“.'], 0, null);
+      navrhy(['Změň barvy na tmavé a zlaté', 'Přidej galerii fotek']);
       return;
     }
     if (druh === 'galerie' && !o.galerie.length) {
@@ -235,15 +267,16 @@
       : ['Přidal jsem <strong>galerii</strong> se šesti fotkami: na úvod a jako samostatnou stránku „Galerie“ v menu.'], cena, zpet);
     navrhy(druh === 'barvy' ? ['Přidej galerii fotek', 'Vrať světlé barvy'] : ['Změň barvy na tmavé a zlaté']);
   }
-  async function odeslat(text) {
+  async function odeslat(text, prilohyZvenku) {
     text = (text || '').trim();
     if (!text || st.bezi) return;
-    var pril = $('soubor').files && $('soubor').files[0] ? $('soubor').files[0].name : '';
+    V.zastav();
+    var pril = prilohyZvenku || V.polozky(); V.vycisti();
     var v = zpravyVitej(); if (v) v.remove();
-    zpravaJa(text, pril); $('vstup').value = ''; $('soubor').value = ''; $('priloha').classList.remove('ma'); velikost(); stavOdeslat();
+    zpravaJa(text, pril); $('vstup').value = ''; velikost(); stavOdeslat();
     $('navrhy').innerHTML = '';
     st.bezi = true; stavOdeslat();
-    try { if (!st.web) await postav(text); else await uprav(text); } finally { st.bezi = false; stavOdeslat(); }
+    try { if (!st.web) await postav(text, pril); else await uprav(text, pril); } finally { st.bezi = false; stavOdeslat(); }
   }
   function zpravyVitej() { return zpravy.querySelector('.vitej'); }
   function vitej() {
@@ -262,8 +295,8 @@
   vstup.addEventListener('input', function () { velikost(); stavOdeslat(); });
   vstup.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); odeslat(vstup.value); } });
   $('skladac').addEventListener('submit', function (e) { e.preventDefault(); odeslat(vstup.value); });
-  $('plus').addEventListener('click', function () { $('soubor').click(); });
-  $('soubor').addEventListener('change', function () { var f = $('soubor').files[0]; $('priloha').textContent = f ? f.name : ''; $('priloha').classList.toggle('ma', !!f); });
+  var V = RedalioVstup.init({ pole: $('skladac'), text: vstup, plus: $('plus'), soubor: $('soubor'), seznam: $('prilohy'), mic: $('mic'), micStav: $('mic-stav'),
+    toast: function (t) { toast(t); }, zmena: function () { velikost(); stavOdeslat(); } });
 
   var toastT;
   function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('ukaz'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('ukaz'); }, 2600); }
@@ -313,6 +346,70 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') zavriPop(); });
   window.addEventListener('resize', zavriPop);
 
+  // adresa webu <nazev>.redalio.com: návrh ze zadání, kontrola pravidel a (simulované) dostupnosti
+  var REZERVOVANE = ['www', 'api', 'ukazka', 'vzor', 'vzory', 'mail', 'admin', 'app', 'novy', 'u', 'redalio', 'static', 'cdn', 'test', 'podpora', 'help', 'blog', 'status'];
+  var OBSAZENE = ['bistro', 'studio', 'kadernictvi', 'restaurace', 'fotograf', 'cestovka', 'instalater', 'baloun', 'dominika'];
+  function slug(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+  function navrhAdresy(nazev) {
+    var sl = slug(nazev).split('-').filter(Boolean), n = '';
+    for (var i = 0; i < sl.length; i++) { var d = n ? n + '-' + sl[i] : sl[i]; if (d.length > 22) break; n = d; }
+    if (n.length < 3) n = (n + '-web').replace(/^-/, '');
+    var z = n, k = 2; while (OBSAZENE.indexOf(z) >= 0 || REZERVOVANE.indexOf(z) >= 0) z = n + '-' + (k++);
+    return z;
+  }
+  function overAdresu(a) {
+    if (!a) return { ok: false, t: 'Napište název, třeba „' + (st.web ? st.web.adresa : 'mujweb') + '“.' };
+    if (!/^[a-z0-9-]+$/.test(a)) return { ok: false, t: 'Jen malá písmena a–z, číslice a pomlčka.' };
+    if (a.length < 3 || a.length > 30) return { ok: false, t: 'Název musí mít 3 až 30 znaků.' };
+    if (/^-|-$/.test(a) || a.indexOf('--') >= 0) return { ok: false, t: 'Pomlčka nesmí být na začátku, na konci ani dvakrát za sebou.' };
+    if (REZERVOVANE.indexOf(a) >= 0) return { ok: false, t: 'Tenhle název si Redalio nechává pro sebe.' };
+    if (st.web && a === st.web.adresa) return { ok: true, t: 'Tohle je současná adresa.', stejna: true };
+    if (OBSAZENE.indexOf(a) >= 0) return { ok: false, t: 'Adresa ' + a + '.redalio.com je obsazená. Zkuste třeba ' + a + '-' + (st.web ? 'web' : '2') + '.' };
+    return { ok: true, t: 'Volná: ' + a + '.redalio.com' };
+  }
+  function ukazAdresu() {
+    if (!st.web) return;
+    $('url-lista').hidden = false; $('url-sub').textContent = st.web.adresa;
+    var c = (stranky(st.web).filter(function (x) { return x.k === st.stranka; })[0] || { cesta: '/' }).cesta;
+    $('url-cesta').textContent = c === '/' ? '' : c;
+    document.querySelectorAll('.adr-txt').forEach(function (el) { el.textContent = st.web.adresa + '.redalio.com'; });
+  }
+  function kontrolaAdresy() {
+    var v = slug($('adr-vstup').value).slice(0, 30), r = overAdresu(v);
+    if ($('adr-vstup').value !== v && document.activeElement === $('adr-vstup')) { /* nechat psát, převod až při uložení */ }
+    $('adr-stav').textContent = r.t; $('adr-stav').className = 'adr-stav ' + (r.ok ? (r.stejna ? '' : 'ok') : 'chyba');
+    $('adr-ulozit').disabled = !r.ok || !!r.stejna;
+    return { v: v, r: r };
+  }
+  function otevriAdresu() {
+    if (!st.web) { toast('Nejdřív postavte web.'); return; }
+    var btn = $('url-zmenit');
+    $('adr-vstup').value = st.web.adresa; kontrolaAdresy();
+    otevriPop(btn, $('menu-adresa'));
+    var pop = $('menu-adresa'), r = btn.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(r.right - pop.offsetWidth, window.innerWidth - pop.offsetWidth - 8)) + 'px';
+    setTimeout(function () { $('adr-vstup').focus(); $('adr-vstup').select(); }, 20);
+  }
+  $('url-zmenit').addEventListener('click', function (e) { e.stopPropagation(); otevriAdresu(); });
+  $('menu-adresa').addEventListener('click', function (e) { e.stopPropagation(); });
+  $('adr-vstup').addEventListener('input', kontrolaAdresy);
+  $('adr-vstup').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('adr-ulozit').click(); } });
+  $('adr-ulozit').addEventListener('click', function () {
+    var k = kontrolaAdresy(); if (!k.r.ok || k.r.stejna) return;
+    var stara = st.web.adresa; st.web.adresa = k.v; ukazAdresu(); zavriPop();
+    toast('Adresa změněna na ' + k.v + '.redalio.com');
+    pridej('<div class="text"><p style="color:var(--muted)">Adresa webu je teď <strong style="color:var(--ink)">' + esc(k.v) + '.redalio.com</strong>. Odkazy na ' + esc(stara) + '.redalio.com se přesměrují.</p></div>', 'ai');
+  });
+  $('url-kopie').addEventListener('click', function () {
+    var u = 'https://' + st.web.adresa + '.redalio.com' + $('url-cesta').textContent;
+    try { if (navigator.clipboard) navigator.clipboard.writeText(u).catch(function () {}); } catch (e) { /* bez schránky */ }
+    toast('Adresa zkopírována: ' + u.replace('https://', ''));
+  });
+  $('url-odkaz').addEventListener('click', function (e) {
+    e.preventDefault();
+    toast('V ukázce web na ' + st.web.adresa + '.redalio.com ještě není. Ve skutečném Redaliu se tu otevře v nové kartě.');
+  });
+
   // mobil: přepínač Chat | Náhled
   function prepniTab(t) {
     st.tab = t; document.body.classList.toggle('tab-nahled', t === 'nahled');
@@ -327,6 +424,7 @@
   vitej();
   var h = new URLSearchParams(location.hash.slice(1)), z = h.get('zadani'), ob = h.get('obor');
   if (!z && ob && R.OBORY[ob]) z = R.OBORY[ob].zadani;
-  if (z) { history.replaceState(null, '', location.pathname); setTimeout(function () { odeslat(z); }, 450); }
+  var zUvodu = h.get('prilohy') ? RedalioVstup.nactiZUvodu() : null;
+  if (z) { history.replaceState(null, '', location.pathname); setTimeout(function () { odeslat(z, zUvodu && zUvodu.length ? zUvodu : null); }, 450); }
   else vstup.focus();
 })();
