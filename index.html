@@ -6,31 +6,26 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Redalio — web jednoduše</title>
 <meta name="description" content="Napište česky, jaký web chcete. AI ho postaví i s podstránkami a dál ho upravujete jen chatem. Platíte kreditem, ne předplatným.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23008c59'/%3E%3Cpath d='M9 23c0-8 5-13 14-14-1 9-6 14-14 14zm0 0l7-7' stroke='%23fff' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff8022'/%3E%3Cpath d='M9 23c0-8 5-13 14-14-1 9-6 14-14 14zm0 0l7-7' stroke='%23fff' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f9fbfa; --card:#ffffff; --soft:#f4f8f6; --ink:#11223a; --muted:#647186; --line:#dee8e4;
-  --cta:#008c59; --cta-ink:#ffffff; --green-soft:#e2f7ec; --green-ink:#006b44;
+  --bg:#fbfaf8; --card:#ffffff; --soft:#f7f3ef; --ink:#11223a; --muted:#5f6b7d; --line:#ebe3dc;
+  --brand:#ff8022; --cta:#c2540a; --cta-hover:#a84500; --cta-ink:#ffffff; --ak-soft:#fff1e6; --ak-ink:#8a3b00;
   --violet-soft:#ece8ff; --violet:#6a4ff0; --blue-soft:#e3f1ff; --blue:#2f7fd8;
   --shadow:0 10px 30px rgba(17,34,58,.08); --dark-foot:#11223a;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#101b23; --card:#162630; --soft:#1c3039; --ink:#f0f7f5; --muted:#a5b6bb; --line:#34505a;
-    --cta:#15bc7e; --cta-ink:#062a1c; --green-soft:#214a3c; --green-ink:#7fe0b6;
-    --violet-soft:#2c2950; --violet:#a796ff; --blue-soft:#1d3550; --blue:#7ab6f5;
-    --shadow:0 10px 30px rgba(0,0,0,.35); --dark-foot:#0b141a;
-  }
-}
+/* výchozí je vždy světlý režim (oranžová jako Levnocestování #ff8022); tmavý jen po přepnutí */
 :root[data-theme="dark"]{
   --bg:#101b23; --card:#162630; --soft:#1c3039; --ink:#f0f7f5; --muted:#a5b6bb; --line:#34505a;
-  --cta:#15bc7e; --cta-ink:#062a1c; --green-soft:#214a3c; --green-ink:#7fe0b6;
+  --brand:#ff8022; --cta:#ff8a3d; --cta-hover:#ff9a4d; --cta-ink:#2a1404; --ak-soft:#3a2616; --ak-ink:#ffb27a;
   --violet-soft:#2c2950; --violet:#a796ff; --blue-soft:#1d3550; --blue:#7ab6f5;
   --shadow:0 10px 30px rgba(0,0,0,.35); --dark-foot:#0b141a;
 }
+:root{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 html,body{margin:0}
@@ -47,10 +42,11 @@ p{margin:0 0 1em}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:48px;padding:0 22px;border-radius:12px;font:700 1rem/1 "DM Sans",system-ui,sans-serif;text-decoration:none;border:1.5px solid transparent;cursor:pointer;transition:transform .15s ease,background .15s ease}
 .btn:hover{transform:translateY(-1px)}
 .btn-main{background:var(--cta);color:var(--cta-ink)}
+.btn-main:hover{background:var(--cta-hover)}
 .btn-line{background:var(--card);color:var(--cta);border-color:var(--cta)}
 .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 :focus-visible{outline:3px solid var(--cta);outline-offset:3px}
-.stitek{display:inline-block;background:var(--green-soft);color:var(--green-ink);font-weight:700;font-size:.82rem;padding:5px 12px;border-radius:999px;margin-bottom:16px}
+.stitek{display:inline-block;background:var(--ak-soft);color:var(--ak-ink);font-weight:700;font-size:.82rem;padding:5px 12px;border-radius:999px;margin-bottom:16px}
 
 /* hlavička */
 header.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
@@ -101,7 +97,7 @@ nav.menu .btn{min-height:40px;padding:0 16px;font-size:.92rem;color:var(--cta-in
 .pruh .sipka{color:var(--muted);font-size:1.4rem;padding-top:12px}
 .ikona{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;margin:0 auto}
 .ikona svg{width:24px;height:24px}
-.i-zelena{background:var(--green-soft);color:var(--cta)}
+.i-oranzova{background:var(--ak-soft);color:var(--cta)}
 .i-fialova{background:var(--violet-soft);color:var(--violet)}
 .i-modra{background:var(--blue-soft);color:var(--blue)}
 @media (max-width:600px){.pruh{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.pruh .sipka{display:none}.pruh .krok b{font-size:.9rem}.pruh .krok span{font-size:.78rem;line-height:1.35;display:block}}
@@ -117,14 +113,14 @@ section{padding:64px 0}
 ol.kroky{list-style:none;margin:0;padding:0}
 ol.kroky li{display:grid;grid-template-columns:44px 1fr;gap:16px;position:relative;padding-bottom:26px}
 ol.kroky li:last-child{padding-bottom:0}
-ol.kroky li:not(:last-child)::after{content:"";position:absolute;left:21px;top:48px;bottom:6px;width:2px;background:var(--green-soft)}
+ol.kroky li:not(:last-child)::after{content:"";position:absolute;left:21px;top:48px;bottom:6px;width:2px;background:var(--ak-soft)}
 .cislo{width:44px;height:44px;border-radius:50%;background:var(--cta);color:var(--cta-ink);display:grid;place-items:center;font:800 1.1rem/1 Manrope,sans-serif}
 ol.kroky h3{margin:8px 0 4px}
 ol.kroky p{color:var(--muted);margin:0;font-size:.95rem}
-.kredit-karta{background:var(--green-soft);border:1px solid color-mix(in srgb,var(--cta) 25%,transparent);border-radius:18px;padding:26px;display:flex;gap:18px;align-items:flex-start}
+.kredit-karta{background:var(--ak-soft);border:1px solid color-mix(in srgb,var(--cta) 25%,transparent);border-radius:18px;padding:26px;display:flex;gap:18px;align-items:flex-start}
 .kredit-karta .mince{flex:none;width:56px;height:56px;border-radius:50%;background:var(--card);display:grid;place-items:center;color:var(--cta)}
 .kredit-karta .mince svg{width:30px;height:30px}
-.kredit-karta h3{color:var(--green-ink);font-size:1.25rem}
+.kredit-karta h3{color:var(--ak-ink);font-size:1.25rem}
 .kredit-karta p{margin:0;color:var(--ink)}
 .kredit-karta ul{margin:12px 0 0;padding-left:1.1em;color:var(--ink);font-size:.95rem}
 
@@ -149,7 +145,6 @@ section.svetla{background:var(--card);border-top:1px solid var(--line);border-bo
 /* ceník kreditu */
 .pripravujeme{display:inline-flex;align-items:center;gap:6px;background:#fff4d6;color:#7a5200;border:1px solid #f0d58a;font-weight:700;font-size:.82rem;padding:5px 12px;border-radius:999px}
 :root[data-theme="dark"] .pripravujeme{background:#3b3115;color:#f3d27a;border-color:#6b5a26}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pripravujeme{background:#3b3115;color:#f3d27a;border-color:#6b5a26}}
 .balicky{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:960px;margin:0 auto}
 @media (max-width:760px){.balicky{grid-template-columns:1fr;max-width:420px}}
 .balicek{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 22px;text-align:center;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow);position:relative}
@@ -158,7 +153,7 @@ section.svetla{background:var(--card);border-top:1px solid var(--line);border-bo
 .balicek .castka{font:800 2.4rem/1.1 Manrope,sans-serif;margin:6px 0 0}
 .balicek .co{color:var(--muted);font-size:.92rem;margin-bottom:14px}
 .balicek .btn{margin-top:auto;width:100%}
-.hlaska{max-width:960px;margin:20px auto 0;background:var(--green-soft);color:var(--green-ink);border-radius:12px;padding:14px 18px;font-weight:700;text-align:center}
+.hlaska{max-width:960px;margin:20px auto 0;background:var(--ak-soft);color:var(--ak-ink);border-radius:12px;padding:14px 18px;font-weight:700;text-align:center}
 .hlaska[hidden]{display:none}
 .platby-pozn{text-align:center;color:var(--muted);font-size:.9rem;margin-top:16px}
 
@@ -208,14 +203,14 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#"><svg style="color:var(--cta)"><use href="#list"/></svg>Redalio</a>
+    <a class="logo" href="#"><svg style="color:var(--brand)"><use href="#list"/></svg>Redalio</a>
     <nav class="menu" aria-label="Hlavní menu">
       <a href="#funkce">Funkce</a>
       <a href="#ukazky">Ukázky</a>
       <a href="#cenik">Ceník</a>
       <a href="#faq">FAQ</a>
       <button class="tema" type="button" id="tema" aria-label="Přepnout světlý a tmavý režim" title="Světlý / tmavý režim">◐</button>
-      <a class="btn btn-main" href="https://redalio.com/">Vyzkoušet zdarma</a>
+      <a class="btn btn-main" href="https://redalio.com/novy">Vyzkoušet zdarma</a>
     </nav>
   </div>
 </header>
@@ -228,7 +223,7 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
         <h1>Vytvořte si web jednoduše. Napište, co chcete.</h1>
         <p class="lead">Redalio je česká služba, se kterou si postavíte web bez znalosti programování. Stačí napsat, co chcete, a AI vám do pár minut vytvoří hotový web i s podstránkami.</p>
         <div class="akce">
-          <a class="btn btn-main" href="https://redalio.com/">Vyzkoušet zdarma →</a>
+          <a class="btn btn-main" href="https://redalio.com/novy">Vyzkoušet zdarma →</a>
           <a class="btn btn-ghost" href="#ukazky">Prohlédnout ukázky</a>
         </div>
         <p class="drobne">Bez registrace a bez předplatného. Na zkoušku dostanete kredit zdarma.</p>
@@ -259,7 +254,7 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
     </div>
     <div class="wrap">
       <div class="pruh" id="funkce">
-        <div class="krok"><div class="ikona i-zelena"><svg><use href="#tuzka"/></svg></div><b>Napište</b><span>Popište, jaký web chcete.</span></div>
+        <div class="krok"><div class="ikona i-oranzova"><svg><use href="#tuzka"/></svg></div><b>Napište</b><span>Popište, jaký web chcete.</span></div>
         <div class="sipka" aria-hidden="true">→</div>
         <div class="krok"><div class="ikona i-fialova"><svg><use href="#jiskry"/></svg></div><b>AI postaví</b><span>Do pár minut máte hotový web.</span></div>
         <div class="sipka" aria-hidden="true">→</div>
@@ -279,7 +274,7 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
           <ol class="kroky">
             <li><div class="cislo">1</div><div><h3>Napište, jaký web chcete</h3><p>Třeba „web pro kadeřnictví v Brně“. Nebo použijte některé z připravených tlačítek oborů.</p></div></li>
             <li><div class="cislo">2</div><div><h3>AI postaví hotový web</h3><p>Do pár minut máte funkční web s několika podstránkami (úvod, ceník, kontakt…) na vlastní adrese, třeba <b>kadernictvi.redalio.com</b>.</p></div></li>
-            <li><div class="cislo">3</div><div><h3>Upravujete chatem</h3><p>Stačí další zpráva, například „změň barvy na zelenou“ nebo „přidej ceník“. Nelíbí se vám změna? Vrátíte ji jedním klikem.</p></div></li>
+            <li><div class="cislo">3</div><div><h3>Upravujete chatem</h3><p>Stačí další zpráva, například „změň barvy na modrou“ nebo „přidej ceník“. Nelíbí se vám změna? Vrátíte ji jedním klikem.</p></div></li>
           </ol>
         </div>
         <div class="kredit-karta" id="kredit">
@@ -308,11 +303,11 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
       <div class="obory">
         <article class="obor">
           <div class="nahled" role="img" aria-label="Náhled webu kadeřnictví" style="background-image:url('https://cdn-src.levnocestovani.eu/fotobanka/ostatni/tropicke-lazne-ostatni.jpg')"><div class="ml">Salon Vlasy<span>Ceník Kontakt</span></div><div class="mt">Kadeřnictví v Brně</div></div>
-          <div class="popis"><h3>Kadeřnictví</h3><p>Ceník služeb, objednání telefonem a galerie účesů.</p><a href="https://redalio.com/">Vyzkoušet zadání →</a></div>
+          <div class="popis"><h3>Kadeřnictví</h3><p>Ceník služeb, objednání telefonem a galerie účesů.</p><a href="https://redalio.com/novy?obor=kadernictvi">Vyzkoušet zadání →</a></div>
         </article>
         <article class="obor">
           <div class="nahled" role="img" aria-label="Náhled webu restaurace" style="background-image:url('https://cdn-src.levnocestovani.eu/fotobanka/potraviny/vecere-s-paella-jidlo.jpg')"><div class="ml">U Tří lip<span>Menu Rezervace</span></div><div class="mt">Restaurace v srdci města</div></div>
-          <div class="popis"><h3>Restaurace</h3><p>Polední menu, stálý lístek a rezervace stolu.</p><a href="https://redalio.com/">Vyzkoušet zadání →</a></div>
+          <div class="popis"><h3>Restaurace</h3><p>Polední menu, stálý lístek a rezervace stolu.</p><a href="https://redalio.com/novy?obor=restaurace">Vyzkoušet zadání →</a></div>
         </article>
         <article class="obor">
           <div class="nahled" role="img" aria-label="Náhled webu cestovní kanceláře" style="background-image:url('https://cdn-src.levnocestovani.eu/fotobanka/francie/korsika/plaz-saleccia-korsika.jpg')"><div class="ml">Ostrovní cestovka<span>Zájezdy Kontakt</span></div><div class="mt">Poznejte svět s námi</div></div>
@@ -320,11 +315,11 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
         </article>
         <article class="obor">
           <div class="nahled bez-foto" role="img" aria-label="Náhled webu řemeslníka"><div class="ml">Novák Instal<span>Služby Kontakt</span></div><span class="nar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.2 5.2L3 18l3 3 6.5-6.5a4 4 0 0 0 5.2-5.2l-2.5 2.5-2.6-.4-.4-2.6z" fill="currentColor"/></svg></span><div class="mt">Řemeslníci</div></div>
-          <div class="popis"><h3>Řemeslníci</h3><p>Co umíte, kde působíte a rychlý kontakt na telefon.</p><a href="https://redalio.com/">Vyzkoušet zadání →</a></div>
+          <div class="popis"><h3>Řemeslníci</h3><p>Co umíte, kde působíte a rychlý kontakt na telefon.</p><a href="https://redalio.com/novy?obor=remeslnik">Vyzkoušet zadání →</a></div>
         </article>
         <article class="obor">
           <div class="nahled" role="img" aria-label="Náhled webu fotografa" style="background-image:url('https://cdn-src.levnocestovani.eu/fotobanka/ostatni/zena-fotografujici-prirodu.jpg')"><div class="ml">Foto Hana<span>Portfolio Kontakt</span></div><div class="mt">Fotograf</div></div>
-          <div class="popis"><h3>Fotograf</h3><p>Portfolio, balíčky focení a objednávka termínu.</p><a href="https://redalio.com/">Vyzkoušet zadání →</a></div>
+          <div class="popis"><h3>Fotograf</h3><p>Portfolio, balíčky focení a objednávka termínu.</p><a href="https://redalio.com/novy?obor=fotograf">Vyzkoušet zadání →</a></div>
         </article>
       </div>
     </div>
@@ -380,7 +375,7 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
       <div class="vyzva">
         <h2>Zkuste si první web ještě dnes</h2>
         <p>Napište dvě věty o svém podniku. Za pár minut uvidíte, jak by mohl vypadat váš nový web.</p>
-        <a class="btn" href="https://redalio.com/">Vyzkoušet zdarma →</a>
+        <a class="btn" href="https://redalio.com/novy">Vyzkoušet zdarma →</a>
       </div>
     </div>
   </section>
@@ -390,7 +385,7 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
   <div class="wrap">
     <div class="sloupce">
       <div>
-        <div class="logo"><svg style="color:#15bc7e"><use href="#list"/></svg>Redalio</div>
+        <div class="logo"><svg style="color:#ff8022"><use href="#list"/></svg>Redalio</div>
         <p>Česká služba pro tvorbu webů chatem. Napíšete, co chcete, AI to postaví.</p>
       </div>
       <div>
@@ -399,7 +394,7 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
       </div>
       <div>
         <h4>Pomoc</h4>
-        <ul><li><a href="#faq">Časté otázky</a></li><li><a href="https://redalio.com/">Vyzkoušet</a></li><li><a href="maketa/">Starší maketa</a></li></ul>
+        <ul><li><a href="#faq">Časté otázky</a></li><li><a href="https://redalio.com/novy">Vyzkoušet</a></li><li><a href="maketa/">Starší maketa</a></li></ul>
       </div>
     </div>
     <div class="spodek"><span>© 2026 Redalio</span><span>Vizuální návrh, ceny jsou ilustrační</span></div>
@@ -412,9 +407,9 @@ footer .spodek{border-top:1px solid #2a3c48;margin-top:30px;padding-top:18px;dis
     b.addEventListener('click', function () { h.hidden = false; h.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
   });
   var root = document.documentElement, t = document.getElementById('tema');
-  try { var ulozeno = localStorage.getItem('redalio-tema'); if (ulozeno) root.dataset.theme = ulozeno; } catch (e) {}
+  try { var ulozeno = localStorage.getItem('redalio-tema'); if (ulozeno === 'light' || ulozeno === 'dark') root.dataset.theme = ulozeno; } catch (e) {}
   t.addEventListener('click', function () {
-    var tmave = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var tmave = root.dataset.theme === 'dark'; // výchozí světlý, ne podle systému
     root.dataset.theme = tmave ? 'light' : 'dark';
     try { localStorage.setItem('redalio-tema', root.dataset.theme); } catch (e) {}
   });
