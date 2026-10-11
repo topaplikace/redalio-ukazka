@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Redalio — editor (návrh)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff8022'/%3E%3Cpath d='M9 23c0-8 5-13 14-14-1 9-6 14-14 14zm0 0l7-7' stroke='%23fff' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --app:#f7f6f4; --card:#ffffff; --ink:#1c1917; --muted:#6b645e; --soft:#a39b94; --line:#e9e5e0; --line2:#dfd9d3; --hover:rgba(28,25,23,.055);
+  --brand:#ff8022; --cta:#c2540a; --cta-hover:#a84500; --tint:#fff3ea; --tint-ink:#8a3b00;
+  --chat:420px; --lista:52px;
+  --sh-1:0 1px 2px rgba(28,25,23,.05),0 2px 10px rgba(28,25,23,.04);
+  --sh-pop:0 10px 40px -8px rgba(28,25,23,.22),0 2px 6px rgba(28,25,23,.06);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--app);color:var(--ink);font:400 15px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+svg{flex:none}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:8px}
+.ik{width:18px;height:18px}
+.ikb{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:0;background:transparent;color:var(--muted)}
+.ikb:hover{background:var(--hover);color:var(--ink)}
+.ikb[aria-pressed=true]{color:var(--ink);background:var(--hover)}
+.pill{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-weight:500;font-size:.86rem;white-space:nowrap}
+.pill:hover{border-color:#cfc8c0}
+.pill.cta{background:var(--cta);border-color:var(--cta);color:#fff}
+.pill.cta:hover{background:var(--cta-hover)}
+.pill.teply{background:var(--tint);border-color:#f6dcc6;color:var(--tint-ink)}
+.pill.teply:hover{border-color:#efc6a4}
+
+/* horní lišta */
+.lista{height:var(--lista);display:grid;grid-template-columns:var(--chat) 1fr;align-items:center}
+.lista .vlevo{display:flex;align-items:center;gap:4px;padding:0 10px 0 12px;min-width:0}
+.projekt{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 10px 0 6px;border-radius:10px;border:0;background:transparent;font-weight:600;font-size:.92rem;min-width:0;max-width:240px}
+.projekt:hover,.projekt[aria-expanded=true]{background:var(--hover)}
+.projekt .znak{width:22px;height:22px;border-radius:7px;flex:none}
+.projekt .jm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.projekt .sip{width:14px;height:14px;color:var(--muted);transition:transform .15s}
+.projekt[aria-expanded=true] .sip{transform:rotate(180deg)}
+.lista .vlevo .mezera{flex:1}
+.lista .vpravo{display:flex;align-items:center;gap:8px;padding:0 12px 0 8px;min-width:0}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:#efece8}
+.seg button{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;border:0;background:transparent;color:var(--muted);font-size:.85rem;font-weight:500}
+.seg button[aria-selected=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.seg button .ik{width:15px;height:15px}
+.stred{flex:1;display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}
+.adresa{display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 4px 0 4px;border-radius:999px;background:#efece8;min-width:0}
+.vyber{display:inline-flex;align-items:center;justify-content:space-between;gap:10px;min-width:150px;height:26px;padding:0 10px;border-radius:999px;border:0;background:var(--card);font-size:.85rem;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.vyber .sip{width:13px;height:13px;color:var(--muted)}
+.adresa .ikb{width:26px;height:26px}
+.akce{display:flex;gap:8px;align-items:center}
+
+/* plocha */
+.plocha{height:calc(100% - var(--lista));display:grid;grid-template-columns:var(--chat) 1fr}
+.chat{display:flex;flex-direction:column;min-height:0;min-width:0;position:relative}
+.zpravy{flex:1;overflow-y:auto;padding:16px 18px 12px 16px;scroll-behavior:smooth}
+.zpravy::-webkit-scrollbar{width:8px}.zpravy::-webkit-scrollbar-thumb{background:#ddd7d0;border-radius:8px}
+.zp{margin:0 0 22px;animation:vjezd .35s ease both}
+@keyframes vjezd{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.zp.ja{display:flex;flex-direction:column;align-items:flex-end}
+.zp.ja .bublina{max-width:88%;background:#ebe8e4;border-radius:18px 18px 6px 18px;padding:10px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.zp.ja .pril{margin-top:6px;font-size:.78rem;color:var(--muted);background:#efece8;border-radius:999px;padding:2px 10px}
+.zp.ai .text p{margin:0 0 10px}
+.zp.ai .text p:last-child{margin-bottom:0}
+.zp.ai .text strong{font-weight:600}
+.pata{display:flex;align-items:center;gap:2px;margin-top:8px;color:var(--soft)}
+.pata .ikb{width:28px;height:28px;color:var(--soft)}
+.pata .ikb:hover{color:var(--ink)}
+.pata .ikb[aria-pressed=true]{color:var(--cta);background:var(--tint)}
+.pata .ikb:disabled{opacity:.35;cursor:default;background:transparent}
+.pata .ik{width:15px;height:15px}
+.pata .cena{margin-left:auto;font-size:.76rem;color:var(--muted);background:#efece8;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.karta-web{margin:0 0 14px;border:1px solid var(--line);background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--sh-1)}
+.karta-web .hl{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;font-weight:500;font-size:.92rem;border-bottom:1px solid var(--line)}
+.karta-web .hl .ok{display:inline-flex;align-items:center;gap:8px}
+.karta-web .hl .ok i{width:18px;height:18px;border-radius:50%;background:#e7f4ea;color:#1f7a3a;display:inline-flex;align-items:center;justify-content:center}
+.karta-web .hl .ok i svg{width:12px;height:12px}
+.karta-web .foto{margin:8px;border-radius:10px;aspect-ratio:16/9;background:#ece7e1 center/cover;position:relative;overflow:hidden}
+.karta-web .foto span{position:absolute;left:12px;bottom:10px;color:#fff;font:400 1.35rem/1.1 "Instrument Serif",serif;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.karta-web .foto::before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,.45))}
+.karta-web .foto.bez{background:linear-gradient(135deg,#3b342e,#1c1917)}
+.karta-web .tl{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px}
+.karta-web .tl button{height:34px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-size:.86rem;font-weight:500}
+.karta-web .tl button:hover{border-color:#cfc8c0}
+.karta-web .tl button.aktivni{background:var(--tint);border-color:#f6dcc6;color:var(--tint-ink)}
+.karta-web .detaily{display:none;padding:2px 14px 12px;font-size:.84rem;color:var(--muted)}
+.karta-web .detaily.ukaz{display:block}
+.karta-web .detaily ul{margin:4px 0 0;padding-left:18px}
+.prubeh{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.6);padding:10px 12px;margin:0 0 12px;font-size:.86rem}
+.prubeh .krok{display:flex;align-items:center;gap:9px;padding:3px 0;color:var(--soft)}
+.prubeh .krok.hotovo{color:var(--muted)}
+.prubeh .krok.bezi{color:var(--ink)}
+.prubeh .krok .st{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center}
+.prubeh .krok .st svg{width:14px;height:14px}
+.prubeh .krok .tecka{width:6px;height:6px;border-radius:50%;background:#d6cfc8}
+.toc{width:14px;height:14px;border:2px solid #f1d2b8;border-top-color:var(--cta);border-radius:50%;animation:toc .8s linear infinite}
+@keyframes toc{to{transform:rotate(360deg)}}
+.prubeh.zavreny .krok{display:none}
+.prubeh .souhrn{display:none;align-items:center;gap:8px;color:var(--muted);cursor:pointer;border:0;background:none;padding:0;font-size:.86rem}
+.prubeh.zavreny .souhrn{display:flex}
+.trpyt{background:linear-gradient(90deg,var(--ink) 0%,var(--ink) 40%,#c9bfb5 50%,var(--ink) 60%,var(--ink) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:trpyt 1.8s linear infinite}
+@keyframes trpyt{from{background-position:100% 0}to{background-position:-150% 0}}
+.vitej h2{font:400 2rem/1.15 "Instrument Serif",serif;margin:18px 0 8px;letter-spacing:-.01em}
+.vitej p{color:var(--muted);margin:0 0 16px}
+.cipy{display:flex;flex-wrap:wrap;gap:6px}
+.cip{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-size:.83rem;color:#3f3a35}
+.cip:hover{border-color:#cfc8c0}
+.navrhy{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 8px}
+.navrhy:empty{display:none}
+.skladac{margin:0 10px 10px;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-1);padding:12px 12px 10px;transition:border-color .2s,box-shadow .2s}
+.skladac:focus-within{border-color:#f0cfb2;box-shadow:0 0 0 3px rgba(255,128,34,.10),var(--sh-1)}
+.skladac textarea{display:block;width:100%;border:0;outline:0;resize:none;background:transparent;font:400 .95rem/1.5 Inter,sans-serif;color:var(--ink);min-height:44px;max-height:180px;padding:2px 4px}
+.skladac textarea::placeholder{color:var(--soft)}
+.skladac .rad{display:flex;align-items:center;gap:8px;margin-top:6px}
+.kulate{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line2);background:var(--card);color:var(--muted)}
+.kulate:hover{color:var(--ink);border-color:#cfc8c0}
+.kulate .ik{width:16px;height:16px}
+.priloha{display:none;font-size:.78rem;color:var(--muted);background:#f3f0ec;border-radius:999px;padding:2px 10px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.priloha.ma{display:inline-block}
+.odeslat{margin-left:auto;width:32px;height:32px;border-radius:50%;border:0;background:var(--cta);color:#fff;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
+.odeslat:hover{background:var(--cta-hover)}
+.odeslat[aria-disabled=true]{background:#d9d3cd;cursor:default}
+.odeslat .ik{width:16px;height:16px}
+.skladac .kredit-info{font-size:.75rem;color:var(--soft)}
+
+/* náhled */
+.nahled{min-width:0;min-height:0;padding:0 8px 8px 0;display:flex}
+.ram{flex:1;min-width:0;position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-1);display:flex;justify-content:center}
+.platno{position:relative;width:100%;height:100%;transition:width .3s ease}
+.ram.mobil{background:#f0ede9}
+.ram.mobil .platno{width:390px;max-width:100%;margin:14px 0;height:calc(100% - 28px);border-radius:28px;overflow:hidden;border:6px solid #1c1917;box-shadow:var(--sh-pop)}
+iframe#web{display:block;width:100%;height:100%;border:0;background:#fff;transition:opacity .25s}
+.prazdno{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;overflow:hidden;isolation:isolate}
+.prazdno::before{content:"";position:absolute;inset:-20%;z-index:-1;background:radial-gradient(ellipse 30% 26% at 50% 70%,rgba(255,128,34,.18),transparent 70%),radial-gradient(ellipse 34% 30% at 35% 64%,rgba(255,200,150,.3),transparent 70%);filter:blur(10px)}
+.prazdno h3{font:400 2.2rem/1.1 "Instrument Serif",serif;margin:0 0 8px}
+.prazdno p{margin:0;color:var(--muted);max-width:340px}
+.stavba{position:absolute;inset:0;background:rgba(255,255,255,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.stavba.ukaz{opacity:1;pointer-events:auto}
+.stavba .stitek{display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 16px;box-shadow:var(--sh-pop);font-size:.9rem;font-weight:500}
+.kostra{position:absolute;inset:0;padding:22px;display:none;flex-direction:column;gap:14px}
+.kostra.ukaz{display:flex}
+.kostra i{display:block;border-radius:12px;background:linear-gradient(90deg,#f1ede8 25%,#f8f5f1 45%,#f1ede8 65%);background-size:300% 100%;animation:kost 1.4s ease infinite}
+@keyframes kost{from{background-position:100% 0}to{background-position:0 0}}
+.stranky{position:absolute;inset:0;overflow:auto;padding:28px;display:none;background:var(--app)}
+.stranky.ukaz{display:block}
+.stranky h3{margin:0 0 4px;font-weight:600;font-size:1.05rem}
+.stranky .pod{margin:0 0 18px;color:var(--muted);font-size:.88rem}
+.mrizka{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.str{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:8px;text-align:left;box-shadow:var(--sh-1)}
+.str:hover{border-color:#cfc8c0}
+.str .nah{aspect-ratio:16/10;border-radius:9px;background:#ece7e1 center/cover}
+.str .nah.bez{background:linear-gradient(135deg,#3b342e,#1c1917)}
+.str b{display:block;margin:10px 6px 0;font-weight:500;font-size:.92rem}
+.str span{display:block;margin:0 6px 4px;color:var(--muted);font-size:.8rem}
+
+/* rozbalovací menu */
+.pop{position:fixed;z-index:50;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-pop);padding:6px;min-width:220px;display:none}
+.pop.ukaz{display:block;animation:vjezd .15s ease both}
+.pop .polozka{display:flex;width:100%;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:10px;border:0;background:transparent;font-size:.88rem;text-align:left;text-decoration:none}
+.pop .polozka:hover{background:var(--hover)}
+.pop .polozka[aria-current=true]{font-weight:600}
+.pop .polozka .ik{width:16px;height:16px;color:var(--muted)}
+.pop hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
+.pop .proj{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:#f5f3f0;font-weight:500;font-size:.88rem}
+.pop .proj .t{width:7px;height:7px;border-radius:50%;background:#1f7a3a}
+.pop .proj .ikb{margin-left:auto;width:26px;height:26px}
+.pop .kr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 6px;font-size:.84rem;color:var(--muted)}
+.pop .kr b{color:var(--ink);font-weight:600}
+.pop .kr .pill{height:30px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:60;background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:.88rem;box-shadow:var(--sh-pop);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100vw - 32px);text-align:center}
+.toast.ukaz{opacity:1;transform:translate(-50%,0)}
+.mob-tab{display:none}
+.jen-mobil{display:none}
+
+@media (max-width:1180px){:root{--chat:360px}.lista .akce .sdilet{display:none}}
+@media (max-width:980px){.lista .akce .koupit{display:none}.vyber{min-width:120px}}
+@media (max-width:820px){
+  body{overflow:hidden}
+  :root{--lista:52px}
+  .lista{grid-template-columns:1fr auto;padding-right:8px}
+  .lista .vlevo .ikb{display:none}
+  .lista .vpravo{padding:0}
+  .lista .vpravo .seg,.lista .vpravo .stred,.lista .akce .sdilet,.lista .akce .koupit{display:none}
+  .jen-mobil{display:inline-flex}
+  .mob-tab{display:flex;justify-content:center;padding:0 12px 8px}
+  .mob-tab .seg{width:100%;max-width:340px}
+  .mob-tab .seg button{flex:1;justify-content:center}
+  .mob-tab .seg button .bod{width:7px;height:7px;border-radius:50%;background:var(--brand);display:none}
+  .mob-tab .seg button .bod.ukaz{display:inline-block}
+  .plocha{grid-template-columns:1fr;height:calc(100% - var(--lista) - 44px)}
+  .nahled{display:none;padding:0 8px 8px;flex-direction:column;gap:8px}
+  body.tab-nahled .chat{display:none}
+  body.tab-nahled .nahled{display:flex}
+  .mob-ovl{display:flex !important;align-items:center;gap:6px;justify-content:center}
+  .ram.mobil .platno{width:100%;margin:0;height:100%;border:0;border-radius:0;box-shadow:none}
+  .zpravy{padding:12px 14px}
+  .skladac{margin:0 8px 8px}
+  .stranky{padding:18px}
+}
+.mob-ovl{display:none}
+.mob-ovl .seg{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "yvy8ei2zhc");
+    window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sip" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+    <symbol id="i-nahoru" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-globus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></g></symbol>
+    <symbol id="i-stranky" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></g></symbol>
+    <symbol id="i-pc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></g></symbol>
+    <symbol id="i-mobil" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></g></symbol>
+    <symbol id="i-obnovit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></g></symbol>
+    <symbol id="i-hist" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></g></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/></g></symbol>
+    <symbol id="i-palec" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.5l-2.3 8A2 2 0 0 1 17.5 22H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9z"/></g></symbol>
+    <symbol id="i-kopie" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></g></symbol>
+    <symbol id="i-zpet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></g></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sdilet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></g></symbol>
+    <symbol id="i-blesk" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor"/></symbol>
+    <symbol id="i-kolo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></g></symbol>
+    <symbol id="i-mince" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.4 0-2.5.8-2.5 2s1.1 1.6 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5"/></g></symbol>
+    <symbol id="i-domu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="lista">
+  <div class="vlevo">
+    <button class="projekt" id="projekt" aria-haspopup="true" aria-expanded="false" aria-controls="menu-projekt">
+      <svg class="znak" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#ff8022"/><path d="M9 23c0-8 5-13 14-14-1 9-6 14-14 14zm0 0l7-7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+      <span class="jm" id="projekt-jm">Nový web</span>
+      <svg class="sip"><use href="#i-sip"/></svg>
+    </button>
+    <span class="mezera"></span>
+    <button class="ikb" id="historie" aria-label="Historie verzí" title="Historie verzí"><svg class="ik"><use href="#i-hist"/></svg></button>
+    <button class="ikb" id="skryt-chat" aria-label="Skrýt chat" title="Skrýt chat"><svg class="ik"><use href="#i-panel"/></svg></button>
+  </div>
+  <div class="vpravo">
+    <div class="seg" role="tablist" aria-label="Pohled">
+      <button role="tab" id="p-nahled" aria-selected="true"><svg class="ik"><use href="#i-globus"/></svg>Náhled</button>
+      <button role="tab" id="p-stranky" aria-selected="false"><svg class="ik"><use href="#i-stranky"/></svg>Stránky</button>
+    </div>
+    <div class="stred">
+      <button class="ikb" id="zarizeni" aria-label="Přepnout na mobil" title="Přepnout na mobil"><svg class="ik"><use href="#i-pc"/></svg></button>
+      <div class="adresa">
+        <button class="ikb" id="obnovit" aria-label="Obnovit náhled" title="Obnovit náhled"><svg class="ik" style="width:15px;height:15px"><use href="#i-obnovit"/></svg></button>
+        <button class="vyber" id="vyber-stranky" aria-haspopup="true" aria-expanded="false"><span id="vyber-jm">Úvod</span><svg class="sip"><use href="#i-sip"/></svg></button>
+      </div>
+    </div>
+    <div class="akce">
+      <button class="pill sdilet" id="sdilet"><svg class="ik" style="width:15px;height:15px"><use href="#i-sdilet"/></svg>Sdílet</button>
+      <button class="pill teply koupit" id="koupit"><svg class="ik" style="width:14px;height:14px"><use href="#i-blesk"/></svg>Koupit kredit</button>
+      <button class="pill cta" id="publikovat">Publikovat</button>
+    </div>
+  </div>
+</header>
+<div class="mob-tab">
+  <div class="seg" role="tablist" aria-label="Chat nebo náhled">
+    <button role="tab" id="t-chat" aria-selected="true"><svg class="ik"><use href="#i-chat"/></svg>Chat</button>
+    <button role="tab" id="t-nahled" aria-selected="false"><svg class="ik"><use href="#i-globus"/></svg>Náhled<span class="bod" id="t-bod"></span></button>
+  </div>
+</div>
+
+<main class="plocha">
+  <aside class="chat" aria-label="Chat">
+    <div class="zpravy" id="zpravy" aria-live="polite"></div>
+    <div class="navrhy" id="navrhy"></div>
+    <form class="skladac" id="skladac" autocomplete="off" novalidate>
+      <label for="vstup" style="position:absolute;left:-9999px">Zpráva pro Redalio</label>
+      <textarea id="vstup" rows="2" placeholder="Popište web, který chcete…"></textarea>
+      <div class="rad">
+        <button type="button" class="kulate" id="plus" aria-label="Přidat fotku nebo logo" title="Přidat fotku nebo logo"><svg class="ik"><use href="#i-plus"/></svg></button>
+        <input type="file" id="soubor" accept="image/*" hidden>
+        <span class="priloha" id="priloha"></span>
+        <span class="kredit-info" id="kredit-info"></span>
+        <button type="submit" class="odeslat" id="odeslat" aria-label="Odeslat" aria-disabled="true"><svg class="ik"><use href="#i-nahoru"/></svg></button>
+      </div>
+    </form>
+  </aside>
+  <section class="nahled" aria-label="Náhled webu">
+    <div class="mob-ovl">
+      <div class="seg" role="tablist" aria-label="Pohled (mobil)">
+        <button role="tab" id="m-nahled" aria-selected="true">Náhled</button>
+        <button role="tab" id="m-stranky" aria-selected="false">Stránky</button>
+      </div>
+      <div class="adresa">
+        <button class="ikb" id="m-obnovit" aria-label="Obnovit náhled"><svg class="ik" style="width:15px;height:15px"><use href="#i-obnovit"/></svg></button>
+        <button class="vyber" id="m-vyber" aria-haspopup="true" aria-expanded="false"><span id="m-vyber-jm">Úvod</span><svg class="sip"><use href="#i-sip"/></svg></button>
+      </div>
+    </div>
+    <div class="ram" id="ram">
+      <div class="platno" id="platno">
+        <div class="prazdno" id="prazdno"><h3>Tady se objeví váš web</h3><p>Napište vlevo, co potřebujete. Redalio web postaví a ukáže ho tady.</p></div>
+        <div class="kostra" id="kostra" aria-hidden="true"><i style="height:40px;width:100%"></i><i style="flex:1;min-height:180px"></i><i style="height:28px;width:45%"></i><div style="display:flex;gap:14px"><i style="height:120px;flex:1"></i><i style="height:120px;flex:1"></i><i style="height:120px;flex:1"></i></div></div>
+        <iframe id="web" title="Náhled webu" hidden></iframe>
+        <div class="stavba" id="stavba"><span class="stitek"><span class="toc"></span><span id="stavba-text" class="trpyt">Stavím úvodní stránku…</span></span></div>
+      </div>
+      <div class="stranky" id="stranky"></div>
+    </div>
+  </section>
+</main>
+
+<div class="pop" id="menu-projekt" role="menu">
+  <div class="proj"><span class="t"></span><span id="menu-jm">Nový web</span><button class="ikb" id="nastaveni" aria-label="Nastavení webu"><svg class="ik"><use href="#i-kolo"/></svg></button></div>
+  <div class="kr"><span><svg class="ik" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-mince"/></svg> Zbývá <b id="menu-kredit">100,00 Kč</b></span><button class="pill" id="novy-web">Nový web</button></div>
+  <hr>
+  <button class="polozka" id="m-koupit"><svg class="ik"><use href="#i-blesk"/></svg>Koupit kredit</button>
+  <button class="polozka" id="m-sdilet"><svg class="ik"><use href="#i-sdilet"/></svg>Sdílet</button>
+  <a class="polozka" href="../"><svg class="ik"><use href="#i-domu"/></svg>Zpět na úvod</a>
+</div>
+<div class="pop" id="menu-stranky" role="menu"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="../data.js"></script>
+<script src="editor.js"></script>
+</body>
+</html>
